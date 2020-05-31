@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller" >
+	<left>
+		<GridPane fx:id="grid">
+		
+		</GridPane>
+	</left>
+	<top>
+		<Label text="DPD Test UI" BorderPane.alignment="CENTER"/>
+	</top>
+	<bottom>
+	
+		<BorderPane>
+			<center>
+				<TextField text="/path/to/uml" editable="false" fx:id="textField"/>	
+			</center>
+			<right>
+			<BorderPane>
+				<left>
+					<Button text="Select" onAction="#selectUMLFile"/>	
+				</left>
+				<right>		
+					<Button text="Detect" onAction="#detectPatterns"/>	
+				</right>
+			</BorderPane>	
+			</right>
+		</BorderPane>
+
+
+	</bottom>
+</BorderPane>
+
