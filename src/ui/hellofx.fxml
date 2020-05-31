@@ -20,6 +20,9 @@
 	<top>
 		<Label text="DPD Test UI" BorderPane.alignment="CENTER"/>
 	</top>
+	<center>
+		<Label fx:id="reportLabel" />
+	</center>
 	<bottom>
 	
 		<BorderPane>

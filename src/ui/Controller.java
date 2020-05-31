@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import detection.DetectionReport;
+import detection.PatternDetector;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -21,6 +24,8 @@ public class Controller {
 
 	@FXML
 	private GridPane grid;
+	@FXML
+	private Label reportLabel;
 	@FXML
 	private TextField textField;
 
@@ -90,6 +95,10 @@ public class Controller {
 			try {
 				UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
 				parser.parse();
+				PatternDetector detector = new PatternDetector(patternsToDetect);
+				DetectionReport report = detector.detect();
+				this.reportLabel.setText(report.toString());
+				
 			} catch (Exception e) {
 				this.showErrorDialog("Parsing data failed " + e);
 			}
