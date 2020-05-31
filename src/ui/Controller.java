@@ -2,6 +2,8 @@ package ui;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,11 +23,16 @@ public class Controller {
 	private GridPane grid;
 	@FXML
 	private TextField textField;
+
 	private File fileChosen;
+	private final List<PatternDefinition> patternsToDetect;
+
+	public Controller() {
+		patternsToDetect = new LinkedList<PatternDefinition>();
+	}
 
 	public void initialize() {
 		this.addPatternsToList();
-
 	}
 
 	private void addPatternsToList() {
@@ -40,6 +47,18 @@ public class Controller {
 			CheckBox box = new CheckBox(pattern.getPatternName());
 			box.setSelected(true);
 			grid.addRow(row, box);
+
+			patternsToDetect.add(pattern);
+			box.setOnAction(event -> {
+				event.consume();
+				if (box.isSelected()) {
+					patternsToDetect.add(pattern);
+				} else {
+					patternsToDetect.remove(pattern);
+				}
+			});
+
+			row++;
 		}
 	}
 
@@ -65,6 +84,8 @@ public class Controller {
 
 		if (fileChosen == null) {
 			this.showErrorDialog("Please select a valid UML file");
+		} else if (patternsToDetect.size() <= 0) {
+			this.showErrorDialog("Please select at least one pattern");
 		} else {
 			try {
 				UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
