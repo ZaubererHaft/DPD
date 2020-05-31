@@ -1,0 +1,4 @@
+{
+	"patternName":"Composite",
+	"namedQuery":"SELECT c1 FROM class c1 WHERE EXISTS (SELECT s FROM subclass s WHERE c1.id = s.target_id AND EXISTS (SELECT a FROM association a WHERE a.source_id = s.source_id AND a.target_id = c1.id));" 
+}

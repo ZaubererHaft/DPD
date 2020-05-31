@@ -1,6 +1,7 @@
 package ui;
 
 import java.io.File;
+import java.util.Collection;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,6 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import parser.UMLParser;
+import pattern.PatternDefinition;
+import pattern.PatternDefinitionExtractor;
 
 public class Controller {
 
@@ -27,16 +30,16 @@ public class Controller {
 
 	private void addPatternsToList() {
 		// ToDo: use relative path
-		File directory = new File("/home/ludwig/Repositories/Study/Seminar/code/eclipse-workspace/dpd/sql");
+		File directory = new File("/home/ludwig/Repositories/Study/Seminar/code/eclipse-workspace/dpd/definitions");
+
+		PatternDefinitionExtractor extractor = new PatternDefinitionExtractor(directory);
+		Collection<PatternDefinition> definitions = extractor.extractDefinitions();
 
 		int row = 0;
-		for (File file : directory.listFiles()) {
-			String name = file.getName();
-			if (name.endsWith(".sql")) {
-				CheckBox box = new CheckBox(name.substring(0, name.length() - 4));
-				box.setSelected(true);
-				grid.addRow(row, box);
-			}
+		for (PatternDefinition pattern : definitions) {
+			CheckBox box = new CheckBox(pattern.getPatternName());
+			box.setSelected(true);
+			grid.addRow(row, box);
 		}
 	}
 
