@@ -1,6 +1,6 @@
-package parser;
+package log;
 
-class Logger {
+public class Logger {
 	public static void Info(Object text) {
 		System.out.println(text);
 	}

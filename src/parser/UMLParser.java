@@ -6,13 +6,15 @@ import javax.persistence.Persistence;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
+import log.Logger;
+
 public class UMLParser {
 
 	private static final String PERSISTENCE_UNIT_NAME = "localhost";
 	private EntityManager em;
 	private Resource resource;
 	private final String file;
-	
+
 	public UMLParser(String file) {
 		this.file = file;
 	}
@@ -55,6 +57,7 @@ public class UMLParser {
 			this.em.getTransaction().rollback();
 			throw e;
 		} finally {
+			Logger.Info("close database connection");
 			this.em.close();
 		}
 	}

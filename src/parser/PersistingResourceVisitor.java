@@ -17,6 +17,7 @@ import org.eclipse.uml2.uml.Type;
 import entity.ClassType;
 import entity.Realization;
 import entity.Subclass;
+import log.Logger;
 
 class PersistingResourceVisitor implements ResourceVisitor {
 

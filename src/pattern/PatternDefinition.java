@@ -13,11 +13,11 @@ public class PatternDefinition {
 		patternName = patterName;
 	}
 
-	public String getNamedQuery() {
+	public String getQuery() {
 		return query;
 	}
 
-	public void setNamedQuery(String query) {
+	public void setQuery(String query) {
 		this.query = query;
 	}
 

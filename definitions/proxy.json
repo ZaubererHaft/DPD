@@ -1,4 +1,4 @@
 {
-	"patternName":"Proxy",
-	"namedQuery":"" 
+	"patternName" : "Proxy",
+	"query" : "SELECT c1 FROM Class c1 WHERE c1 <> c1"
 }

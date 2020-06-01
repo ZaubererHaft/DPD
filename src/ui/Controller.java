@@ -7,6 +7,7 @@ import java.util.List;
 
 import detection.DetectionReport;
 import detection.PatternDetector;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -31,6 +32,7 @@ public class Controller {
 
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
+	private DetectionReport lastReport;
 
 	public Controller() {
 		patternsToDetect = new LinkedList<PatternDefinition>();
@@ -92,16 +94,27 @@ public class Controller {
 		} else if (patternsToDetect.size() <= 0) {
 			this.showErrorDialog("Please select at least one pattern");
 		} else {
-			try {
-				UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
-				parser.parse();
-				PatternDetector detector = new PatternDetector(patternsToDetect);
-				DetectionReport report = detector.detect();
-				this.reportLabel.setText(report.toString());
-				
-			} catch (Exception e) {
-				this.showErrorDialog("Parsing data failed " + e);
-			}
+			this.reportLabel.setText("loading...");
+			
+			new Thread(() -> {
+				this.executeDetection();
+				Platform.runLater(() -> {
+					this.reportLabel.setText(lastReport.asText());
+				});
+			}).start();
+		}
+	}
+
+	private void executeDetection() {
+		try {
+
+			UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
+			parser.parse();
+			PatternDetector detector = new PatternDetector(patternsToDetect);
+			lastReport = detector.detect();
+
+		} catch (Exception e) {
+			this.showErrorDialog("Parsing data failed " + e);
 		}
 	}
 
