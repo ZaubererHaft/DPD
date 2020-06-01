@@ -24,9 +24,6 @@ public class PatternDetector {
 	}
 
 	public DetectionReport detect() {
-		// 1. establish database connection
-		// 2. run queries for all definitions
-		// 3. create and return report
 		this.connectToDatabase();
 		return this.runQueries();
 	}

@@ -6,23 +6,27 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.InterfaceRealization;
+import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
+import entity.Classifier;
 import entity.ClassifierType;
 import entity.Derivation;
+import entity.Method;
 import log.Logger;
 
 class PersistingResourceVisitor implements ResourceVisitor {
 
 	private final EntityManager em;
-	private Map<Element, entity.Classifier> classifierMap;
-	
+	private Map<Element, Classifier> classifierMap;
+
 	public PersistingResourceVisitor(EntityManager em) {
 		this.classifierMap = new HashMap<>();
 
@@ -37,8 +41,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 		entity.Association association = new entity.Association();
 		Element obj = umlProperty.getOwner();
-		entity.Classifier sourceClass = classifierMap.get(obj);
-		entity.Classifier targetClass = classifierMap.get(type);
+		Classifier sourceClass = classifierMap.get(obj);
+		Classifier targetClass = classifierMap.get(type);
 
 		association.setSource(sourceClass);
 		association.setTarget(targetClass);
@@ -57,8 +61,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 		sources.forEach(s -> targets.forEach(t -> {
 			Derivation derivation = new Derivation();
-			entity.Classifier sourceClass = classifierMap.get(s);
-			entity.Classifier targetClass = classifierMap.get(t);
+			Classifier sourceClass = classifierMap.get(s);
+			Classifier targetClass = classifierMap.get(t);
 
 			derivation.setSource(sourceClass);
 			derivation.setTarget(targetClass);
@@ -72,7 +76,7 @@ class PersistingResourceVisitor implements ResourceVisitor {
 	public void visit(Class umlClass) {
 		Logger.Info("found class:" + umlClass);
 
-		entity.Classifier c = new entity.Classifier();
+		Classifier c = new Classifier();
 		c.setName(umlClass.getName());
 		c.setType(umlClass.isAbstract() ? ClassifierType.ABSTRACT : ClassifierType.DEFAULT);
 		em.persist(c);
@@ -84,12 +88,12 @@ class PersistingResourceVisitor implements ResourceVisitor {
 	public void visit(Interface umlInterface) {
 		Logger.Info("found interface:" + umlInterface);
 
-		entity.Classifier c = new entity.Classifier();
+		Classifier c = new Classifier();
 		c.setName(umlInterface.getName());
 		c.setType(ClassifierType.INTERFACE);
-		
+
 		em.persist(c);
-		
+
 		this.classifierMap.put(umlInterface, c);
 
 	}
@@ -97,16 +101,16 @@ class PersistingResourceVisitor implements ResourceVisitor {
 	@Override
 	public void visit(InterfaceRealization umInterfaceRealization) {
 		Logger.Info("found interface realization: " + umInterfaceRealization);
-		
+
 		Stream<Element> sources = umInterfaceRealization.getSources().stream().filter(s -> UMLTypifier.isClass(s));
 		Stream<Element> targets = umInterfaceRealization.getTargets().stream().filter(s -> UMLTypifier.isInterface(s));
-		
+
 		sources.forEach(s -> targets.forEach(t -> {
 			Derivation derivation = new Derivation();
-			
-			entity.Classifier sourceInterface = classifierMap.get(s);
-			entity.Classifier targetClass = classifierMap.get(t);
-			
+
+			Classifier sourceInterface = classifierMap.get(s);
+			Classifier targetClass = classifierMap.get(t);
+
 			derivation.setTarget(targetClass);
 			derivation.setSource(sourceInterface);
 
@@ -114,6 +118,30 @@ class PersistingResourceVisitor implements ResourceVisitor {
 				em.persist(derivation);
 			}
 		}));
+	}
+
+	@Override
+	public void visit(Operation operation) {
+		Logger.Info("found operation: " + operation);
+
+		Method method = new Method();
+		method.setName(operation.getName());
+		method.setStatic(operation.isStatic());
+
+		Element owner = operation.getOwner();
+		Classifier c = this.classifierMap.get(owner);
+
+		if (c != null) {
+			method.setClassifier(c);
+			em.persist(method);
+		}
+
+	}
+
+	@Override
+	public void visit(Behavior behavior) {
+		Logger.Info("found behavior: " + behavior);
+
 	}
 
 }
