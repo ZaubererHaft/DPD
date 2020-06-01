@@ -8,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import entity.Classifier;
 import log.Logger;
 import pattern.PatternDefinition;
 
@@ -44,8 +45,8 @@ public class PatternDetector {
 
 			definitions.forEach(definition -> {
 				Logger.Info("run query " + definition.getQuery());
-				Query q = em.createQuery(definition.getQuery());
-				List<entity.Class> result = q.getResultList();
+				Query q = em.createNativeQuery(definition.getQuery(), Classifier.class);
+				List<entity.Classifier> result = q.getResultList();
 				Logger.Info("result: " + result);
 				
 				Paragraph p = new Paragraph(definition.getPatternName(), result.size());

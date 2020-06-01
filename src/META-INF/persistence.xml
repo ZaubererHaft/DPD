@@ -6,10 +6,8 @@
 	<persistence-unit name="localhost"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<class>entity.Class</class>
-		<class>entity.Interface</class>
-		<class>entity.Realization</class>
-		<class>entity.Subclass</class>
+		<class>entity.Classifier</class>
+		<class>entity.Derivation</class>
 		<class>entity.Association</class>
 		<properties>
 			<property name="javax.persistence.target-database"

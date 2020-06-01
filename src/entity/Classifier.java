@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Class 
+public class Classifier 
 {
     @Id
     @GeneratedValue
@@ -19,7 +19,7 @@ public class Class
     
     @Column
     @Enumerated(EnumType.STRING)
-    private ClassType type;
+    private ClassifierType type;
 
 	public long getId() {
 		return id;
@@ -37,11 +37,11 @@ public class Class
 		this.name = name;
 	}
 
-	public ClassType getType() {
+	public ClassifierType getType() {
 		return type;
 	}
 
-	public void setType(ClassType type) {
+	public void setType(ClassifierType type) {
 		this.type = type;
 	}
 

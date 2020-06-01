@@ -6,16 +6,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
 @Entity
-public class Realization {
+public class Derivation {
     @Id
     @GeneratedValue
     private long id;
     
     @JoinColumn
-    private Class source;
+    private Classifier source;
     
     @JoinColumn
-    private Interface target;
+    private Classifier target;
 
 	public long getId() {
 		return id;
@@ -24,27 +24,26 @@ public class Realization {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
-	
-	public Class getSource() {
+
+	public Classifier getSource() {
 		return source;
 	}
 
-	public void setSource(Class source) {
+	public void setSource(Classifier source) {
 		this.source = source;
 	}
 
-	public Interface getTarget() {
+	public Classifier getTarget() {
 		return target;
 	}
 
-	public void setTarget(Interface target) {
+	public void setTarget(Classifier target) {
 		this.target = target;
 	}
 
 	@Override
 	public String toString() {
-		return "Realization [id=" + id + ", source=" + source + ", target=" + target + "]";
-	}
-    
+		return "Subclass [id=" + id + ", source=" + source + ", target=" + target + "]";
+	}  
+
 }

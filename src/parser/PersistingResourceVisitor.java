@@ -14,20 +14,18 @@ import org.eclipse.uml2.uml.InterfaceRealization;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
-import entity.ClassType;
-import entity.Realization;
-import entity.Subclass;
+import entity.ClassifierType;
+import entity.Derivation;
 import log.Logger;
 
 class PersistingResourceVisitor implements ResourceVisitor {
 
 	private final EntityManager em;
-	private Map<Element, entity.Class> classMap;
-	private Map<Element, entity.Interface> interfaceMap;
-
+	private Map<Element, entity.Classifier> classifierMap;
+	
 	public PersistingResourceVisitor(EntityManager em) {
-		this.classMap = new HashMap<>();
-		this.interfaceMap = new HashMap<>();
+		this.classifierMap = new HashMap<>();
+
 		this.em = em;
 	}
 
@@ -39,8 +37,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 		entity.Association association = new entity.Association();
 		Element obj = umlProperty.getOwner();
-		entity.Class sourceClass = classMap.get(obj);
-		entity.Class targetClass = classMap.get(type);
+		entity.Classifier sourceClass = classifierMap.get(obj);
+		entity.Classifier targetClass = classifierMap.get(type);
 
 		association.setSource(sourceClass);
 		association.setTarget(targetClass);
@@ -58,14 +56,14 @@ class PersistingResourceVisitor implements ResourceVisitor {
 		Stream<Element> targets = umlGeneralization.getTargets().stream().filter(s -> UMLTypifier.isClass(s));
 
 		sources.forEach(s -> targets.forEach(t -> {
-			Subclass subclass = new Subclass();
-			entity.Class sourceClass = classMap.get(s);
-			entity.Class targetClass = classMap.get(t);
+			Derivation derivation = new Derivation();
+			entity.Classifier sourceClass = classifierMap.get(s);
+			entity.Classifier targetClass = classifierMap.get(t);
 
-			subclass.setSource(sourceClass);
-			subclass.setTarget(targetClass);
+			derivation.setSource(sourceClass);
+			derivation.setTarget(targetClass);
 
-			em.persist(subclass);
+			em.persist(derivation);
 		}));
 
 	}
@@ -74,23 +72,25 @@ class PersistingResourceVisitor implements ResourceVisitor {
 	public void visit(Class umlClass) {
 		Logger.Info("found class:" + umlClass);
 
-		entity.Class c = new entity.Class();
+		entity.Classifier c = new entity.Classifier();
 		c.setName(umlClass.getName());
-		c.setType(umlClass.isAbstract() ? ClassType.ABSTRACT : ClassType.DEFAULT);
+		c.setType(umlClass.isAbstract() ? ClassifierType.ABSTRACT : ClassifierType.DEFAULT);
 		em.persist(c);
 
-		this.classMap.put(umlClass, c);
+		this.classifierMap.put(umlClass, c);
 	}
 
 	@Override
 	public void visit(Interface umlInterface) {
 		Logger.Info("found interface:" + umlInterface);
 
-		entity.Interface i = new entity.Interface();
-		i.setName(umlInterface.getName());
-		em.persist(i);
+		entity.Classifier c = new entity.Classifier();
+		c.setName(umlInterface.getName());
+		c.setType(ClassifierType.INTERFACE);
 		
-		this.interfaceMap.put(umlInterface, i);
+		em.persist(c);
+		
+		this.classifierMap.put(umlInterface, c);
 
 	}
 
@@ -102,15 +102,16 @@ class PersistingResourceVisitor implements ResourceVisitor {
 		Stream<Element> targets = umInterfaceRealization.getTargets().stream().filter(s -> UMLTypifier.isInterface(s));
 		
 		sources.forEach(s -> targets.forEach(t -> {
-			Realization realization = new Realization();
-			entity.Class sourceInterface = classMap.get(s);
-			entity.Interface targetClass = interfaceMap.get(t);
+			Derivation derivation = new Derivation();
 			
-			realization.setTarget(targetClass);
-			realization.setSource(sourceInterface);
+			entity.Classifier sourceInterface = classifierMap.get(s);
+			entity.Classifier targetClass = classifierMap.get(t);
+			
+			derivation.setTarget(targetClass);
+			derivation.setSource(sourceInterface);
 
 			if (sourceInterface != null && targetClass != null) {
-				em.persist(realization);
+				em.persist(derivation);
 			}
 		}));
 	}

@@ -1,5 +1,5 @@
 package entity;
 
-public enum ClassType {
+public enum ClassifierType {
 	ABSTRACT, INTERFACE, DEFAULT
 }

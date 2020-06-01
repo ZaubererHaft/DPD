@@ -1,4 +1,4 @@
 {
 	"patternName" : "Composite",
-	"query" : "SELECT c1 FROM Class c1 WHERE EXISTS (SELECT s FROM Subclass s WHERE c1 = s.target AND EXISTS (SELECT a FROM Association a WHERE a.source = s.source AND a.target = c1))"
+	"query" : "SELECT * FROM classifier c WHERE EXISTS (SELECT * FROM derivation d WHERE c.id = d.target_id AND EXISTS (SELECT * FROM association a WHERE a.source_id = d.source_id AND a.target_id = c.id));"
 }

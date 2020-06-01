@@ -12,10 +12,10 @@ public class Association {
     private long id;
     
     @JoinColumn
-    private Class source;
+    private Classifier source;
     
     @JoinColumn
-    private Class target;
+    private Classifier target;
 
 	public long getId() {
 		return id;
@@ -25,19 +25,19 @@ public class Association {
 		this.id = id;
 	}
 
-	public Class getSource() {
+	public Classifier getSource() {
 		return source;
 	}
 
-	public void setSource(Class source) {
+	public void setSource(Classifier source) {
 		this.source = source;
 	}
 
-	public Class getTarget() {
+	public Classifier getTarget() {
 		return target;
 	}
 
-	public void setTarget(Class target) {
+	public void setTarget(Classifier target) {
 		this.target = target;
 	}
 
