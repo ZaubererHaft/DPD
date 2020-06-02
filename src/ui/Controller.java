@@ -33,6 +33,7 @@ public class Controller {
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
 	private DetectionReport lastReport;
+	private boolean parsed;
 
 	public Controller() {
 		patternsToDetect = new LinkedList<PatternDefinition>();
@@ -73,6 +74,7 @@ public class Controller {
 	private void selectUMLFile(ActionEvent event) {
 		event.consume();
 
+		this.parsed = false;
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("UML files", "*.uml", "*.xmi");
 		fileChooser.getExtensionFilters().add(extFilter);
@@ -95,7 +97,7 @@ public class Controller {
 			this.showErrorDialog("Please select at least one pattern");
 		} else {
 			this.reportLabel.setText("loading...");
-			
+
 			new Thread(() -> {
 				this.executeDetection();
 				Platform.runLater(() -> {
@@ -108,8 +110,11 @@ public class Controller {
 	private void executeDetection() {
 		try {
 
-			UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
-			parser.parse();
+			if (!parsed) {
+				UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
+				parser.parse();
+				parsed = true;
+			}
 			PatternDetector detector = new PatternDetector(patternsToDetect);
 			lastReport = detector.detect();
 

@@ -1,4 +1,4 @@
 {
 	"patternName" : "Composite",
-	"query" : "SELECT * FROM classifier c WHERE EXISTS (SELECT * FROM derivation d WHERE c.id = d.target_id AND EXISTS (SELECT * FROM association a WHERE a.source_id = d.source_id AND a.target_id = c.id));"
+	"query" : "SELECT * FROM classifier c WHERE c.type IN ('ABSTRACT','DEFAULT') AND EXISTS (SELECT * FROM derivation d WHERE c.id = d.target_id AND EXISTS (SELECT * FROM association a WHERE a.source_id = d.source_id AND a.target_id = c.id));"
 }

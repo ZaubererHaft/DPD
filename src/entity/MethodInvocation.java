@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 
 @Entity
 public class MethodInvocation {
@@ -11,10 +12,10 @@ public class MethodInvocation {
 	@GeneratedValue
 	private long id;
 
-	@Column
+	@JoinColumn
 	private Classifier classifier;
 	
-	@Column
+	@JoinColumn
 	private Method method;
 
 	public long getId() {

@@ -10,6 +10,7 @@
 		<class>entity.Derivation</class>
 		<class>entity.Association</class>
 		<class>entity.Method</class>
+		<class>entity.MethodInvocation</class>
 		<properties>
 			<property name="javax.persistence.target-database"
 				value="PostgreSQL" />

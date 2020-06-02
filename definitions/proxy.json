@@ -1,4 +1,4 @@
 {
 	"patternName" : "Proxy",
-	"query" : "SELECT c1 FROM Classifier c1 WHERE c1 <> c1"
+	"query" : "SELECT * FROM classifier i WHERE i.type = 'INTERFACE' AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = i.id AND EXISTS (SELECT * FROM method m WHERE m.classifier_id = d1.source_id AND EXISTS (SELECT * FROM method m2 WHERE m2.name = m.name AND m2.classifier_id = i.id AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = i.id AND mi.method_id = m.id))));"
 }

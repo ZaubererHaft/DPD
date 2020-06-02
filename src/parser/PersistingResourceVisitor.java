@@ -1,17 +1,19 @@
 package parser;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
-import org.eclipse.uml2.uml.Behavior;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.InterfaceRealization;
+import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
@@ -20,15 +22,21 @@ import entity.Classifier;
 import entity.ClassifierType;
 import entity.Derivation;
 import entity.Method;
+import entity.MethodInvocation;
 import log.Logger;
 
 class PersistingResourceVisitor implements ResourceVisitor {
 
 	private final EntityManager em;
 	private Map<Element, Classifier> classifierMap;
+	private Map<Element, Method> methodMap;
+
+	private Map<Element, List<Property>> propertyMap;
 
 	public PersistingResourceVisitor(EntityManager em) {
 		this.classifierMap = new HashMap<>();
+		this.propertyMap = new HashMap<>();
+		this.methodMap = new HashMap<>();
 
 		this.em = em;
 	}
@@ -49,6 +57,14 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 		if (sourceClass != null && targetClass != null) {
 			em.persist(association);
+
+			List<Property> props = propertyMap.get(obj);
+			if (props == null) {
+				props = new LinkedList<Property>();
+				propertyMap.put(obj, props);
+			}
+
+			props.add(umlProperty);
 		}
 	}
 
@@ -133,15 +149,43 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 		if (c != null) {
 			method.setClassifier(c);
+			this.methodMap.put(operation, method);
+
 			em.persist(method);
 		}
 
 	}
 
 	@Override
-	public void visit(Behavior behavior) {
+	public void visit(OpaqueBehavior behavior) {
 		Logger.Info("found behavior: " + behavior);
 
+		List<String> bodies = behavior.getBodies();
+
+		// owner of spec is class
+		Element owner = behavior.getSpecification().getOwner();
+		List<Property> props = this.propertyMap.get(owner);
+		
+		//ToDo: method invocation don't depend on properties alone
+		if (props != null) {
+			for (Property property : props) {
+				for (String body : bodies) {
+					if (body.contains(property.getName())) {
+						MethodInvocation invocation = new MethodInvocation();
+
+						Classifier classifier = classifierMap.get(property.getType());
+						invocation.setClassifier(classifier);
+
+						Method method = methodMap.get(behavior.getSpecification());
+						invocation.setMethod(method);
+
+						if (method != null && classifier != null) {
+							em.persist(invocation);
+						}
+					}
+				}
+			}
+		}
 	}
 
 }
