@@ -20,7 +20,6 @@ public class UMLParser {
 	}
 
 	public void parse() {
-
 		this.connectToDatabase();
 		this.loadResource();
 		this.parseResource();

@@ -36,7 +36,6 @@ public class Controller {
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
 	private DetectionReport lastReport;
-	private boolean parsed;
 
 	public Controller() {
 		patternsToDetect = new LinkedList<PatternDefinition>();
@@ -77,17 +76,23 @@ public class Controller {
 	private void selectUMLFile(ActionEvent event) {
 		event.consume();
 
-		this.parsed = false;
 		FileChooser fileChooser = new FileChooser();
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("UML files", "*.uml", "*.xmi");
 		fileChooser.getExtensionFilters().add(extFilter);
 
-		this.fileChosen = fileChooser.showOpenDialog(grid.getScene().getWindow());
-		if (fileChosen == null) {
-			this.textField.setText("/path/to/uml");
-		} else {
-			this.textField.setText(fileChosen.getAbsolutePath());
+		if (this.fileChosen != null) {
+			fileChooser.setInitialDirectory(this.fileChosen.getParentFile());
 		}
+
+		File oldFile = this.fileChosen;
+		this.fileChosen = fileChooser.showOpenDialog(grid.getScene().getWindow());
+		
+		if (this.fileChosen == null) {
+			this.fileChosen = oldFile;
+		}
+
+		this.textField.setText(this.fileChosen.getAbsolutePath());
+
 	}
 
 	@FXML
@@ -112,12 +117,9 @@ public class Controller {
 
 	private void executeDetection() {
 		try {
+			UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
+			parser.parse();
 
-			if (!parsed) {
-				UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
-				parser.parse();
-				parsed = true;
-			}
 			PatternDetector detector = new PatternDetector(patternsToDetect);
 			lastReport = detector.detect();
 
@@ -125,6 +127,7 @@ public class Controller {
 			Logger.Error(e);
 			Platform.runLater(() -> {
 				this.showErrorDialog("Parsing data failed " + e);
+				this.reportLabel.setText("");
 			});
 		}
 	}
