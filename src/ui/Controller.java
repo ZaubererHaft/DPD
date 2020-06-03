@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
+
 import detection.DetectionReport;
 import detection.PatternDetector;
 import javafx.application.Platform;
@@ -17,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import log.Logger;
 import parser.UMLParser;
 import pattern.PatternDefinition;
 import pattern.PatternDefinitionExtractor;
@@ -119,7 +122,10 @@ public class Controller {
 			lastReport = detector.detect();
 
 		} catch (Exception e) {
-			this.showErrorDialog("Parsing data failed " + e);
+			Logger.Error(e);
+			Platform.runLater(() -> {
+				this.showErrorDialog("Parsing data failed " + e);
+			});
 		}
 	}
 
