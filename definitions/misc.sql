@@ -18,7 +18,7 @@ SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND EXISTS 
                                                                      AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = c2.id AND mi.method_id = m.id)));
 
 -- strategy as join
-SELECT c1.*, c2.*
+SELECT c1.* as test1, c2.* as test2
 FROM classifier c1 JOIN method m ON m.classifier_id = c1.id
                    JOIN methodinvocation mi ON mi.method_id = m.id 
                    JOIN classifier c2 ON mi.classifier_id = c2.id 

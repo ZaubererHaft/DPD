@@ -1,6 +1,5 @@
 package detection;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +10,6 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import entity.Classifier;
-import entity.ClassifierJoinedClassifier;
 import entity.ClassifierType;
 import log.Logger;
 import pattern.PatternDefinition;
@@ -46,40 +44,14 @@ public class PatternDetector {
 
 			definitions.forEach(definition -> {
 				Logger.Info("run query " + definition.getQuery());
-				Query q = em.createNativeQuery(definition.getQuery(), "ClassifierJoinedClassifier.class");
-				
-				List<ClassifierJoinedClassifier> result = new LinkedList();
+				Query q = em.createNativeQuery(definition.getQuery());
+
+				@SuppressWarnings("unchecked")
 				List<Object[]> results = q.getResultList();
-
-				results.stream().forEach((record) -> {
-					Long id1 = (Long) record[0];
-					String name1 = (String) record[1];
-					String type1 = (String) record[2];
-
-					Long id2 = (Long) record[3];
-					String name2 = (String) record[4];
-					String type2 = (String) record[5];		
-					
-					ClassifierJoinedClassifier cjc = new ClassifierJoinedClassifier();
-					Classifier parent = new Classifier();
-					Classifier child = new Classifier();			
-					
-					parent.setId(id1);
-					parent.setName(name1);
-					parent.setType(ClassifierType.valueOf(type1));
-					
-					child.setId(id2);
-					child.setName(name2);
-					child.setType(ClassifierType.valueOf(type2));
-										
-					cjc.setChild(child);
-					cjc.setParent(parent);
-					result.add(cjc);
-				});
-
-				Logger.Info("result: " + result);
-
-				Paragraph p = new Paragraph(definition, result);
+				Collection<ClassifierJoinedClassifier> joinedResult = mapResults(results);
+				
+				Logger.Info("result: " + joinedResult);
+				Paragraph p = new Paragraph(definition, joinedResult);
 				report.addParagraph(p);
 			});
 
@@ -93,5 +65,30 @@ public class PatternDetector {
 			Logger.Info("close database connection");
 			this.em.close();
 		}
+	}
+
+	private Collection<ClassifierJoinedClassifier> mapResults(List<Object[]> results) {
+		List<ClassifierJoinedClassifier> result = new LinkedList<>();
+		results.stream().forEach((record) -> {
+			ClassifierJoinedClassifier cjc = new ClassifierJoinedClassifier();
+
+			for (int i = 0; i < record.length; i += 3) {
+				Classifier cl = new Classifier();
+
+				cl.setId((Long) record[i]);
+				cl.setName((String) record[i + 1]);
+				cl.setType(ClassifierType.valueOf((String) record[i + 2]));
+
+				if (i <= 0) {
+					cjc.setParent(cl);
+				} else {
+					cjc.addChild(cl);
+				}
+			}
+
+			result.add(cjc);
+		});
+		
+		return result;
 	}
 }

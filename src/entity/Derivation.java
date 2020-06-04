@@ -1,21 +1,26 @@
 package entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
 @Entity
-public class Derivation {
-    @Id
-    @GeneratedValue
-    private long id;
-    
-    @JoinColumn
-    private Classifier source;
-    
-    @JoinColumn
-    private Classifier target;
+public class Derivation implements Serializable {
+
+	private static final long serialVersionUID = 798444406265080395L;
+
+	@Id
+	@GeneratedValue
+	private long id;
+
+	@JoinColumn
+	private Classifier source;
+
+	@JoinColumn
+	private Classifier target;
 
 	public long getId() {
 		return id;
@@ -44,6 +49,6 @@ public class Derivation {
 	@Override
 	public String toString() {
 		return "Subclass [id=" + id + ", source=" + source + ", target=" + target + "]";
-	}  
+	}
 
 }

@@ -1,13 +1,17 @@
 package entity;
 
-import javax.persistence.Column;
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
 @Entity
-public class MethodInvocation {
+public class MethodInvocation implements Serializable{
+	
+	private static final long serialVersionUID = 170139923088047413L;
+
 	@Id
 	@GeneratedValue
 	private long id;

@@ -1,21 +1,26 @@
 package entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
 @Entity
-public class Association {
-    @Id
-    @GeneratedValue
-    private long id;
-    
-    @JoinColumn
-    private Classifier source;
-    
-    @JoinColumn
-    private Classifier target;
+public class Association implements Serializable {
+
+	private static final long serialVersionUID = 2893976906743581556L;
+
+	@Id
+	@GeneratedValue
+	private long id;
+
+	@JoinColumn
+	private Classifier source;
+
+	@JoinColumn
+	private Classifier target;
 
 	public long getId() {
 		return id;
@@ -44,6 +49,6 @@ public class Association {
 	@Override
 	public String toString() {
 		return "Association [id=" + id + ", source=" + source + ", target=" + target + "]";
-	}  
-    
+	}
+
 }

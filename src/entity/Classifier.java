@@ -1,5 +1,7 @@
 package entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -8,18 +10,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class Classifier 
-{
-    @Id
-    @GeneratedValue
-    private long id;
-    
-    @Column
-    private String name;
-    
-    @Column
-    @Enumerated(EnumType.STRING)
-    private ClassifierType type;
+public class Classifier implements Serializable {
+
+	private static final long serialVersionUID = -6484298387064551697L;
+
+	@Id
+	@GeneratedValue
+	private long id;
+
+	@Column
+	private String name;
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	private ClassifierType type;
 
 	public long getId() {
 		return id;
@@ -49,7 +53,5 @@ public class Classifier
 	public String toString() {
 		return "Class [id=" + id + ", name=" + name + ", type=" + type + "]";
 	}
-    
-	
-    
+
 }
