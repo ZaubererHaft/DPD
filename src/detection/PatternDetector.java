@@ -49,7 +49,7 @@ public class PatternDetector {
 				@SuppressWarnings("unchecked")
 				List<Object[]> results = q.getResultList();
 				Collection<ClassifierJoinedClassifier> joinedResult = mapResults(results);
-				
+
 				Logger.Info("result: " + joinedResult);
 				Paragraph p = new Paragraph(definition, joinedResult);
 				report.addParagraph(p);
@@ -79,16 +79,12 @@ public class PatternDetector {
 				cl.setName((String) record[i + 1]);
 				cl.setType(ClassifierType.valueOf((String) record[i + 2]));
 
-				if (i <= 0) {
-					cjc.setParent(cl);
-				} else {
-					cjc.addChild(cl);
-				}
+				cjc.addChild(cl);
 			}
 
 			result.add(cjc);
 		});
-		
+
 		return result;
 	}
 }

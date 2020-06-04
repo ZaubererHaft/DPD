@@ -11,6 +11,14 @@ SELECT * FROM classifier i WHERE i.type = 'INTERFACE' AND EXISTS (SELECT * FROM 
                                                       AND EXISTS (SELECT * FROM method m WHERE m.classifier_id = d1.source_id
                                                       AND EXISTS (SELECT * FROM method m2 WHERE m2.name = m.name AND m2.classifier_id = i.id
                                                       AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = i.id AND mi.method_id = m.id))));
+--proxy as join
+SELECT c2.*, i.*
+FROM classifier i JOIN derivation d1 ON d1.target_id = i.id 
+                  JOIN classifier c2 ON d1.source_id = c2.id
+                  JOIN method m ON m.classifier_id = d1.source_id
+                  JOIN method m2 ON (m2.name = m.name AND m2.classifier_id = i.id)
+                  JOIN methodinvocation mi ON (mi.classifier_id = i.id AND mi.method_id = m.id)
+WHERE i.type = 'INTERFACE';
 
 -- strategy
 SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type = 'INTERFACE'

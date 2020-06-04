@@ -34,10 +34,9 @@ public class Paragraph {
 		List<String> lines = new LinkedList<String>();
 
 		for (ClassifierJoinedClassifier joinedClassifier : result) {
-			String line = joinedClassifier.getParent().getName();
 			String children = joinedClassifier.getChildren().stream().map(Classifier::getName).reduce("",
-					(a, b) -> a + "," + b);
-			lines.add(line + children);
+					(a, b) -> a + " " + b);
+			lines.add(children);
 		}
 
 		return lines;
