@@ -1,0 +1,4 @@
+{
+	"patternName" : "Adapter",
+	"query" : "SELECT * FROM classifier c WHERE c.type = 'INTERFACE' AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c.id AND EXISTS (SELECT * FROM method m WHERE m.classifier_id = d1.source_id AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type IN ('DEFAULT', 'ABSTRACT') AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = c2.id AND mi.method_id = m.id))));"
+}
