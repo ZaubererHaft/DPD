@@ -1,5 +1,6 @@
 package detection;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +16,11 @@ public class DetectionReport {
 		this.paragraphs.add(paragraph);
 	}
 
+	public Collection<Paragraph> getParagraphs()
+	{
+		return new LinkedList<Paragraph>(paragraphs);
+	}
+	
 	public String asText() {
 		return paragraphs.stream().map(p -> p.asText()).reduce("", (a, b) -> a + "\n" + b);
 	}

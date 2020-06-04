@@ -1,6 +1,8 @@
 package detection;
 
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -9,6 +11,8 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import entity.Classifier;
+import entity.ClassifierJoinedClassifier;
+import entity.ClassifierType;
 import log.Logger;
 import pattern.PatternDefinition;
 
@@ -37,19 +41,48 @@ public class PatternDetector {
 	private DetectionReport runQueries() {
 		try {
 			Logger.Info("run queries...");
-			
+
 			DetectionReport report = new DetectionReport();
 
 			definitions.forEach(definition -> {
 				Logger.Info("run query " + definition.getQuery());
-				Query q = em.createNativeQuery(definition.getQuery(), Classifier.class);
-				List<entity.Classifier> result = q.getResultList();
-				Logger.Info("result: " + result);
+				Query q = em.createNativeQuery(definition.getQuery(), "ClassifierJoinedClassifier.class");
 				
-				Paragraph p = new Paragraph(definition.getPatternName(), result.size());
-				report.addParagraph(p);			
+				List<ClassifierJoinedClassifier> result = new LinkedList();
+				List<Object[]> results = q.getResultList();
+
+				results.stream().forEach((record) -> {
+					Long id1 = (Long) record[0];
+					String name1 = (String) record[1];
+					String type1 = (String) record[2];
+
+					Long id2 = (Long) record[3];
+					String name2 = (String) record[4];
+					String type2 = (String) record[5];		
+					
+					ClassifierJoinedClassifier cjc = new ClassifierJoinedClassifier();
+					Classifier parent = new Classifier();
+					Classifier child = new Classifier();			
+					
+					parent.setId(id1);
+					parent.setName(name1);
+					parent.setType(ClassifierType.valueOf(type1));
+					
+					child.setId(id2);
+					child.setName(name2);
+					child.setType(ClassifierType.valueOf(type2));
+										
+					cjc.setChild(child);
+					cjc.setParent(parent);
+					result.add(cjc);
+				});
+
+				Logger.Info("result: " + result);
+
+				Paragraph p = new Paragraph(definition, result);
+				report.addParagraph(p);
 			});
-			
+
 			Logger.Info("done");
 			return report;
 

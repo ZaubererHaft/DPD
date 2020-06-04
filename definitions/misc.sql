@@ -17,6 +17,12 @@ SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND EXISTS 
                                                                      AND EXISTS (SELECT * FROM method m WHERE m.classifier_id = c1.id 
                                                                      AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = c2.id AND mi.method_id = m.id)));
 
+-- strategy as join
+SELECT c1.*, c2.*
+FROM classifier c1 JOIN method m ON m.classifier_id = c1.id
+                   JOIN methodinvocation mi ON mi.method_id = m.id 
+                   JOIN classifier c2 ON mi.classifier_id = c2.id 
+WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND c2.type = 'INTERFACE';
 
 -- adapter
 SELECT * FROM classifier c WHERE c.type = 'INTERFACE' AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c.id 

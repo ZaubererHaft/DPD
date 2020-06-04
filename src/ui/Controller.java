@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.uml2.uml.resources.util.UMLResourcesUtil;
-
 import detection.DetectionReport;
 import detection.PatternDetector;
 import javafx.application.Platform;
@@ -17,6 +15,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import log.Logger;
@@ -29,7 +29,7 @@ public class Controller {
 	@FXML
 	private GridPane grid;
 	@FXML
-	private Label reportLabel;
+	private TreeView<String> reportTree;
 	@FXML
 	private TextField textField;
 
@@ -86,12 +86,17 @@ public class Controller {
 
 		File oldFile = this.fileChosen;
 		this.fileChosen = fileChooser.showOpenDialog(grid.getScene().getWindow());
-		
+
 		if (this.fileChosen == null) {
 			this.fileChosen = oldFile;
 		}
 
-		this.textField.setText(this.fileChosen.getAbsolutePath());
+		if (fileChosen == null) {
+			this.textField.setText("path/to/uml");
+		} else {
+			this.textField.setText(this.fileChosen.getAbsolutePath());
+
+		}
 
 	}
 
@@ -104,12 +109,28 @@ public class Controller {
 		} else if (patternsToDetect.size() <= 0) {
 			this.showErrorDialog("Please select at least one pattern");
 		} else {
-			this.reportLabel.setText("loading...");
+			// this.reportLabel.setText("loading...");
 
 			new Thread(() -> {
 				this.executeDetection();
 				Platform.runLater(() -> {
-					this.reportLabel.setText(lastReport.asText());
+
+					TreeItem<String> rootItem = new TreeItem<String>("Report");
+					rootItem.setExpanded(true);
+
+					lastReport.getParagraphs().forEach(p -> {
+						TreeItem<String> subItem = new TreeItem<String>(p.asText());
+						
+						p.getLines().forEach(l -> 
+						{
+							TreeItem<String> subSubItem = new TreeItem<>(l);
+							subItem.getChildren().add(subSubItem);
+						});
+
+						rootItem.getChildren().add(subItem);
+					});
+
+					reportTree.setRoot(rootItem);
 				});
 			}).start();
 		}
@@ -127,7 +148,7 @@ public class Controller {
 			Logger.Error(e);
 			Platform.runLater(() -> {
 				this.showErrorDialog("Parsing data failed " + e);
-				this.reportLabel.setText("");
+				// this.reportLabel.setText("");
 			});
 		}
 	}
