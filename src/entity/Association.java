@@ -2,6 +2,7 @@ package entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -22,10 +23,10 @@ public class Association implements Serializable {
 	@JoinColumn
 	private Classifier target;
 
-	@JoinColumn
+	@Column
 	private String lowerMultiplicity;
 	
-	@JoinColumn
+	@Column
 	private String upperMultiplicity;
 
 	public long getId() {
@@ -51,13 +52,21 @@ public class Association implements Serializable {
 	public void setTarget(Classifier target) {
 		this.target = target;
 	}
-
+	
 	public String getLowerMultiplicity() {
 		return lowerMultiplicity;
 	}
 
 	public void setLowerMultiplicity(String lowerMultiplicity) {
 		this.lowerMultiplicity = lowerMultiplicity;
+	}
+	
+	public String getUpperMultiplicity() {
+		return upperMultiplicity;
+	}
+
+	public void setUpperMultiplicity(String upperMultiplicity) {
+		this.upperMultiplicity = upperMultiplicity;
 	}
 
 	@Override

@@ -45,6 +45,19 @@ class PersistingResourceVisitor implements ResourceVisitor {
 	public void visit(Property umlProperty) {
 		Logger.Info("found property:" + umlProperty);
 
+		int lowerBound = umlProperty.lowerBound();
+		int upperBound = umlProperty.upperBound();
+
+		String lowerMultiplicity = "" + lowerBound;
+		String upperMultiplicity = "" + upperBound;
+
+		if (lowerBound < 0) {
+			lowerMultiplicity = "*";
+		}
+		if (upperBound < 0) {
+			upperMultiplicity = "*";
+		}
+
 		Type type = umlProperty.getType();
 
 		entity.Association association = new entity.Association();
@@ -54,6 +67,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 		association.setSource(sourceClass);
 		association.setTarget(targetClass);
+		association.setLowerMultiplicity(lowerMultiplicity);
+		association.setUpperMultiplicity(upperMultiplicity);
 
 		if (sourceClass != null && targetClass != null) {
 			em.persist(association);
@@ -165,8 +180,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 		// owner of spec is class
 		Element owner = behavior.getSpecification().getOwner();
 		List<Property> props = this.propertyMap.get(owner);
-		
-		//ToDo: method invocation don't depend on properties alone
+
+		// ToDo: method invocation don't depend on properties alone
 		if (props != null) {
 			for (Property property : props) {
 				for (String body : bodies) {
