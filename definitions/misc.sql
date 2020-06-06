@@ -59,3 +59,26 @@ SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifi
                             JOIN methodinvocation mi ON mi.method_id=m.id AND mi.classifier_id = c2.id
                             JOIN derivation d2 ON d2.target_id = c2.id
 WHERE c1.type IN ('ABSTRACT');
+
+--decorator
+SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT') AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type IN ('ABSTRACT') 
+                                                          AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c1.id AND d1.source_id = c2.id
+                                                          AND EXISTS (SELECT * FROM association a WHERE a.source_id = c2.id AND a.target_id = c1.id
+                                                          AND EXISTS (SELECT * FROM derivation d4 WHERE d4.target_id = c2.id
+                                                          AND EXISTS (SELECT * FROM derivation d2 WHERE d2.target_id = c1.id AND d2.id <> d1.id
+                                                          AND NOT EXISTS (SELECT * FROM derivation d3 WHERE d2.source_id = d3.target_id))))));
+-- deorator as join
+SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN  classifier c2 ON c2.type IN ('ABSTRACT') 
+                            JOIN derivation d1 ON d1.target_id = c1.id AND d1.source_id = c2.id
+                            JOIN association a ON a.source_id = c2.id AND a.target_id = c1.id
+                            JOIN derivation d4 ON d4.target_id = c2.id
+                            JOIN derivation d2 ON d2.target_id = c1.id AND d2.id <> d1.id AND NOT EXISTS (SELECT * FROM derivation d3 WHERE d2.source_id = d3.target_id)
+WHERE c1.type IN ('ABSTRACT');
+
+-- facade:
+-- sehr unkonkret, (ein subsystem wird nur über ein interface angesprochen), daher ausgelassen
+
+-- flyweight
+-- wieder zu konkret, fordert sehr spezielle art der objektgenerierung, daher ausgelassen
+
+

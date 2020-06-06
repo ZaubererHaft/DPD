@@ -22,6 +22,12 @@ public class Association implements Serializable {
 	@JoinColumn
 	private Classifier target;
 
+	@JoinColumn
+	private String lowerMultiplicity;
+	
+	@JoinColumn
+	private String upperMultiplicity;
+
 	public long getId() {
 		return id;
 	}
@@ -46,9 +52,18 @@ public class Association implements Serializable {
 		this.target = target;
 	}
 
+	public String getLowerMultiplicity() {
+		return lowerMultiplicity;
+	}
+
+	public void setLowerMultiplicity(String lowerMultiplicity) {
+		this.lowerMultiplicity = lowerMultiplicity;
+	}
+
 	@Override
 	public String toString() {
-		return "Association [id=" + id + ", source=" + source + ", target=" + target + "]";
+		return "Association [id=" + id + ", source=" + source + ", target=" + target + ", lowerMultiplicity="
+				+ lowerMultiplicity + ", upperMultiplicity=" + upperMultiplicity + "]";
 	}
 
 }
