@@ -116,4 +116,7 @@ SELECT distinct (c1.id), c1.name, c1.type, c2.*, c3.*  FROM classifier c1 JOIN c
                             JOIN classifier c3 ON c3.type IN ('ABSTRACT','DEFAULT') AND mi2.classifier_id = c3.id
 WHERE c1.type IN ('ABSTRACT','DEFAULT');
 
+
+--observer
+
                                                                    
