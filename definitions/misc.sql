@@ -118,5 +118,20 @@ WHERE c1.type IN ('ABSTRACT','DEFAULT');
 
 
 --observer
+SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT','DEFAULT') AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type IN ('ABSTRACT','DEFAULT') 
+                                                                    AND EXISTS (SELECT * FROM association a WHERE a.source_id = c1.id AND a.target_id = c2.id AND a.uppermultiplicity = '*'
+                                                                    AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c2.id
+                                                                    AND EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c1.id
+                                                                    AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.method_id = m1.id AND mi.classifier_id = c2.id
+                                                                    AND EXISTS (SELECT * FROM method m2 WHERE m2.classifier_id = c1.id and m1.id <> m2.id
+                                                                    AND EXISTS (SELECT * FROM methodparameter mp1 WHERE mp1.method_id = m2.id AND mp1.classifier_id = c2.id)))))));
 
-                                                                   
+--observer as join
+SELECT distinct (c1.id), c1.name, c1.type, c2.* FROM classifier c1 JOIN classifier c2 ON c2.type IN ('ABSTRACT','DEFAULT') 
+                            JOIN association a ON a.source_id = c1.id AND a.target_id = c2.id AND a.uppermultiplicity = '*'
+                            JOIN derivation d1 ON d1.target_id = c2.id
+                            JOIN method m1 ON m1.classifier_id = c1.id
+                            JOIN methodinvocation mi ON mi.method_id = m1.id AND mi.classifier_id = c2.id
+                            JOIN method m2 ON m2.classifier_id = c1.id and m1.id <> m2.id
+                            JOIN methodparameter mp1 ON mp1.method_id = m2.id AND mp1.classifier_id = c2.id
+WHERE c1.type IN ('ABSTRACT','DEFAULT');
