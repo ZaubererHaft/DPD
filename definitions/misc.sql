@@ -12,7 +12,7 @@ SELECT * FROM classifier i WHERE i.type = 'INTERFACE' AND EXISTS (SELECT * FROM 
                                                       AND EXISTS (SELECT * FROM method m2 WHERE m2.name = m.name AND m2.classifier_id = i.id
                                                       AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = i.id AND mi.method_id = m.id))));
 --proxy as join
-SELECT c2.*, i.*
+SELECT distinct (i.id), i.name, i.type, c2.id, c2.name, c2.type
 FROM classifier i JOIN derivation d1 ON d1.target_id = i.id 
                   JOIN classifier c2 ON d1.source_id = c2.id
                   JOIN method m ON m.classifier_id = d1.source_id
@@ -26,7 +26,7 @@ SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND EXISTS 
                                                                      AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = c2.id AND mi.method_id = m.id)));
 
 -- strategy as join
-SELECT c1.* as test1, c2.* as test2
+SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type
 FROM classifier c1 JOIN method m ON m.classifier_id = c1.id
                    JOIN methodinvocation mi ON mi.method_id = m.id 
                    JOIN classifier c2 ON mi.classifier_id = c2.id 
@@ -38,9 +38,24 @@ SELECT * FROM classifier c WHERE c.type = 'INTERFACE' AND EXISTS (SELECT * FROM 
                                                       AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type IN ('DEFAULT', 'ABSTRACT')
                                                       AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = c2.id AND mi.method_id = m.id))));
 -- adapter as join
-SELECT c.*, c2.* 
+SELECT distinct (c.id), c.name, c.type, c2.id, c2.name, c2.type
 FROM classifier c JOIN derivation d1 ON d1.target_id = c.id 
                   JOIN method m ON m.classifier_id = d1.source_id
                   JOIN classifier c2 ON c2.type IN ('DEFAULT', 'ABSTRACT')
                   JOIN methodinvocation mi ON mi.classifier_id = c2.id AND mi.method_id = m.id
 WHERE c.type = 'INTERFACE';
+
+
+-- bridge 
+SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT') AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c1.id
+                                                                     AND EXISTS (SELECT * FROM method m WHERE m.classifier_id = c1.id
+                                                                     AND EXISTS (SELECT * FROM classifier c2 WHERE  c2.type IN ('ABSTRACT')
+                                                                     AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.method_id=m.id AND mi.classifier_id = c2.id
+                                                                     AND EXISTS (SELECT * FROM derivation d2 WHERE d2.target_id = c2.id)))));
+-- bridge as join
+SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN derivation d1 ON d1.target_id = c1.id
+                            JOIN method m ON m.classifier_id = c1.id
+                            JOIN classifier c2 ON c2.type IN ('ABSTRACT')
+                            JOIN methodinvocation mi ON mi.method_id=m.id AND mi.classifier_id = c2.id
+                            JOIN derivation d2 ON d2.target_id = c2.id
+WHERE c1.type IN ('ABSTRACT');
