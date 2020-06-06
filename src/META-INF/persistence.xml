@@ -11,6 +11,7 @@
 		<class>entity.Association</class>
 		<class>entity.Method</class>
 		<class>entity.MethodInvocation</class>
+		<class>entity.MethodParameter</class>
 		<properties>
 			<property name="javax.persistence.target-database"
 				value="PostgreSQL" />

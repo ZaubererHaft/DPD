@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.uml2.uml.Class;
 import org.eclipse.uml2.uml.Element;
 import org.eclipse.uml2.uml.Generalization;
@@ -15,6 +16,7 @@ import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.InterfaceRealization;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Operation;
+import org.eclipse.uml2.uml.Parameter;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
 
@@ -23,6 +25,7 @@ import entity.ClassifierType;
 import entity.Derivation;
 import entity.Method;
 import entity.MethodInvocation;
+import entity.MethodParameter;
 import log.Logger;
 
 class PersistingResourceVisitor implements ResourceVisitor {
@@ -80,6 +83,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 			}
 
 			props.add(umlProperty);
+		} else {
+			Logger.Warn("skip property as no belonging source and target classifier was found");
 		}
 	}
 
@@ -147,6 +152,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 
 			if (sourceInterface != null && targetClass != null) {
 				em.persist(derivation);
+			} else {
+				Logger.Warn("skip interface realization as no belonging source and target classifier was found");
 			}
 		}));
 	}
@@ -167,8 +174,25 @@ class PersistingResourceVisitor implements ResourceVisitor {
 			this.methodMap.put(operation, method);
 
 			em.persist(method);
-		}
 
+			EList<Parameter> parameters = operation.getOwnedParameters();
+			parameters.forEach(p -> {
+				Logger.Info("found parameter " + p + " for operation");
+				MethodParameter mp = new MethodParameter();
+				mp.setName(p.getName());
+				mp.setMethod(method);
+
+				Classifier type = this.classifierMap.get(p.getType());
+				if (type != null) {
+					mp.setClassifier(type);
+					em.persist(mp);
+				} else {
+					Logger.Warn("skip parameter as no belonging classifier was found");
+				}
+			});
+		} else {
+			Logger.Warn("skip operation as no belonging classifier was found");
+		}
 	}
 
 	@Override
@@ -181,7 +205,7 @@ class PersistingResourceVisitor implements ResourceVisitor {
 		Element owner = behavior.getSpecification().getOwner();
 		List<Property> props = this.propertyMap.get(owner);
 
-		// ToDo: method invocation don't depend on properties alone
+		// ToDo: method invocation don't depend on properties alone (consider parameters for example)
 		if (props != null) {
 			for (Property property : props) {
 				for (String body : bodies) {
