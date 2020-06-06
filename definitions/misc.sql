@@ -95,3 +95,25 @@ SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifi
                             JOIN derivation d2 ON d2.target_id = c1.id AND d2.id <> d1.id AND NOT EXISTS (SELECT * FROM derivation d3 WHERE d2.source_id = d3.target_id)
 
 WHERE c1.type IN ('ABSTRACT');
+
+--command
+SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT','DEFAULT') AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type IN ('INTERFACE')
+                                                                    AND EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c1.id
+                                                                    AND EXISTS (SELECT * FROM methodinvocation mi1 WHERE mi1.method_id = m1.id AND mi1.classifier_id = c2.id
+                                                                    AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c2.id
+                                                                    AND EXISTS (SELECT * FROM method m2 WHERE m2.classifier_id = d1.source_id
+                                                                    AND EXISTS (SELECT * FROM methodinvocation mi2 WHERE mi2.method_id = m2.id
+                                                                    AND EXISTS (SELECT * FROM classifier c3 WHERE c3.type IN ('ABSTRACT','DEFAULT') AND mi2.classifier_id = c3.id)))))));
+
+
+-- command as join
+SELECT distinct (c1.id), c1.name, c1.type, c2.*, c3.*  FROM classifier c1 JOIN classifier c2 ON c2.type IN ('INTERFACE')
+                            JOIN method m1 ON m1.classifier_id = c1.id
+                            JOIN methodinvocation mi1 ON mi1.method_id = m1.id AND mi1.classifier_id = c2.id
+                            JOIN derivation d1 ON d1.target_id = c2.id
+                            JOIN method m2 ON m2.classifier_id = d1.source_id
+                            JOIN methodinvocation mi2 ON mi2.method_id = m2.id
+                            JOIN classifier c3 ON c3.type IN ('ABSTRACT','DEFAULT') AND mi2.classifier_id = c3.id
+WHERE c1.type IN ('ABSTRACT','DEFAULT');
+
+                                                                   
