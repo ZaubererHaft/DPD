@@ -143,3 +143,34 @@ WHERE c1.type IN ('ABSTRACT','DEFAULT');
 -- ähnlich zu composite, daher uninteressant
 
 --memento
+
+
+--singleton
+SELECT * FROM classifier c WHERE NOT EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c.id AND m1.name = c.name AND m1.visibility = 'PUBLIC')
+                                 AND EXISTS (SELECT * FROM method m2 WHERE m2.classifier_id = c.id AND m2.isstatic = 't' AND m2.visibility = 'PUBLIC'
+                                 AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.method_id = m2.id AND mi.classifier_id = c.id
+                                 AND EXISTS (SELECT * FROM methodreturntype mrt WHERE mrt.method_id = m2.id AND mrt.classifier_id = c.id)));
+
+--singleton as join
+SELECT c.* FROM classifier c JOIN method m2 ON m2.classifier_id = c.id AND m2.isstatic = 't' AND m2.visibility = 'PUBLIC'
+                           JOIN methodinvocation mi ON mi.method_id = m2.id AND mi.classifier_id = c.id
+                           JOIN methodreturntype mrt ON mrt.method_id = m2.id AND mrt.classifier_id = c.id
+WHERE NOT EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c.id AND m1.name = c.name AND m1.visibility = 'PUBLIC');
+
+
+--abstract factory
+SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT','INTERFACE') AND EXISTS (SELECT * FROM derivation d1 WHERE d1.target_id = c1.id
+                                                                      AND EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c1.id
+                                                                      AND EXISTS (SELECT * FROM method m2 WHERE m2.classifier_id = d1.source_id AND m1.name = m2.name
+                                                                      AND EXISTS (SELECT * FROM methodreturntype mrt WHERE mrt.method_id = m2.id 
+                                                                      AND EXISTS (SELECT * FROM classifier c2 WHERE c2.id = mrt.classifier_id
+                                                                      AND EXISTS (SELECT * FROM derivation d3 WHERE d3.source_id = c2.id))))));
+
+--abstract factory as json
+SELECT distinct (c1.id), c1.name, c1.type FROM classifier c1 JOIN derivation d1 ON d1.target_id = c1.id
+                            JOIN method m1 ON m1.classifier_id = c1.id
+                            JOIN method m2 ON m2.classifier_id = d1.source_id AND m1.name = m2.name
+                            JOIN methodreturntype mrt ON mrt.method_id = m2.id 
+                            JOIN classifier c2 ON c2.id = mrt.classifier_id
+                            JOIN derivation d3 ON d3.source_id = c2.id
+WHERE c1.type IN ('ABSTRACT','INTERFACE');
