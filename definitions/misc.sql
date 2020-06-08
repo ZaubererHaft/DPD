@@ -135,3 +135,11 @@ SELECT distinct (c1.id), c1.name, c1.type, c2.* FROM classifier c1 JOIN classifi
                             JOIN method m2 ON m2.classifier_id = c1.id and m1.id <> m2.id
                             JOIN methodparameter mp1 ON mp1.method_id = m2.id AND mp1.classifier_id = c2.id
 WHERE c1.type IN ('ABSTRACT','DEFAULT');
+
+--visitor
+--es gibt leider mit unseren UML Ansatz auch große Schwierigkeiten, methodenaufrufe genauer zu erkennen als "Methode A ruft Objekt B". z.b. beim Visitor brauchen wir die Info "Methode A ruft Methode B auf". Daher muss der Visitor wegfallen
+
+-- interpreter
+-- ähnlich zu composite, daher uninteressant
+
+--memento

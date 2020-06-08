@@ -17,8 +17,10 @@ import org.eclipse.uml2.uml.InterfaceRealization;
 import org.eclipse.uml2.uml.OpaqueBehavior;
 import org.eclipse.uml2.uml.Operation;
 import org.eclipse.uml2.uml.Parameter;
+import org.eclipse.uml2.uml.ParameterDirectionKind;
 import org.eclipse.uml2.uml.Property;
 import org.eclipse.uml2.uml.Type;
+import org.eclipse.uml2.uml.VisibilityKind;
 
 import entity.Classifier;
 import entity.ClassifierType;
@@ -26,6 +28,8 @@ import entity.Derivation;
 import entity.Method;
 import entity.MethodInvocation;
 import entity.MethodParameter;
+import entity.MethodReturnType;
+import entity.Visibility;
 import log.Logger;
 
 class PersistingResourceVisitor implements ResourceVisitor {
@@ -166,6 +170,12 @@ class PersistingResourceVisitor implements ResourceVisitor {
 		method.setName(operation.getName());
 		method.setStatic(operation.isStatic());
 
+		if (operation.getVisibility() == VisibilityKind.PRIVATE_LITERAL) {
+			method.setVisibility(Visibility.PRIVATE);
+		} else {
+			method.setVisibility(Visibility.PUBLIC);
+		}
+
 		Element owner = operation.getOwner();
 		Classifier c = this.classifierMap.get(owner);
 
@@ -178,18 +188,35 @@ class PersistingResourceVisitor implements ResourceVisitor {
 			EList<Parameter> parameters = operation.getOwnedParameters();
 			parameters.forEach(p -> {
 				Logger.Info("found parameter " + p + " for operation");
-				MethodParameter mp = new MethodParameter();
-				mp.setName(p.getName());
-				mp.setMethod(method);
-
 				Classifier type = this.classifierMap.get(p.getType());
-				if (type != null) {
-					mp.setClassifier(type);
-					em.persist(mp);
+
+				if (p.getDirection() == ParameterDirectionKind.RETURN_LITERAL) {
+					Logger.Info("parameter is return value");
+
+					if (type != null) {
+						MethodReturnType mrt = new MethodReturnType();
+						mrt.setClassifier(type);
+						mrt.setMethod(method);
+
+						em.persist(mrt);
+					} else {
+						Logger.Warn("skip return value as no belonging classifier was found");
+					}
 				} else {
-					Logger.Warn("skip parameter as no belonging classifier was found");
+					MethodParameter mp = new MethodParameter();
+					mp.setName(p.getName());
+					mp.setMethod(method);
+
+					if (type != null) {
+						mp.setClassifier(type);
+						em.persist(mp);
+					} else {
+						Logger.Warn("skip parameter as no belonging classifier was found");
+					}
 				}
+
 			});
+
 		} else {
 			Logger.Warn("skip operation as no belonging classifier was found");
 		}
@@ -205,7 +232,8 @@ class PersistingResourceVisitor implements ResourceVisitor {
 		Element owner = behavior.getSpecification().getOwner();
 		List<Property> props = this.propertyMap.get(owner);
 
-		// ToDo: method invocation don't depend on properties alone (consider parameters for example)
+		// ToDo: method invocation don't depend on properties alone (consider parameters
+		// for example)
 		if (props != null) {
 			for (Property property : props) {
 				for (String body : bodies) {

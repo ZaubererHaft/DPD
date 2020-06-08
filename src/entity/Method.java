@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -25,6 +27,10 @@ public class Method implements Serializable {
 
 	@JoinColumn
 	private Classifier classifier;
+
+	@Column
+	@Enumerated(EnumType.STRING)
+	private Visibility visibility;
 
 	public long getId() {
 		return id;
@@ -56,6 +62,14 @@ public class Method implements Serializable {
 
 	public void setClassifier(Classifier classifier) {
 		this.classifier = classifier;
+	}
+
+	public Visibility getVisibility() {
+		return visibility;
+	}
+
+	public void setVisibility(Visibility visibility) {
+		this.visibility = visibility;
 	}
 
 	@Override
