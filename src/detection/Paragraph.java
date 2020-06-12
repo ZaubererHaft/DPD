@@ -9,11 +9,11 @@ import pattern.PatternDefinition;
 
 public class Paragraph {
 
-	private PatternDefinition definition;
-	private final Collection<ClassifierJoinedClassifier> result;
+	private final PatternDefinition definition;
+	private final Collection<String> result;
 
-	public Paragraph(PatternDefinition definition, Collection<ClassifierJoinedClassifier> result) {
-		this.result = result;
+	public Paragraph(PatternDefinition definition, Collection<String> queryResults) {
+		this.result = queryResults;
 		this.definition = definition;
 	}
 
@@ -26,21 +26,11 @@ public class Paragraph {
 	}
 
 	public String asText() {
-		return getPattern() + " pattern: " + getCount();
+		return getPattern() + " (" + getCount() + ")";
 	}
 
 	public Collection<String> getLines() {
-
-		List<String> lines = new LinkedList<String>();
-
-		for (ClassifierJoinedClassifier joinedClassifier : result) {
-			String children = joinedClassifier.getChildren().stream().map(Classifier::getName).reduce("",
-					(a, b) -> a + " " + b);
-			lines.add(children);
-		}
-
-		return lines;
-
+		return result;
 	}
 
 }

@@ -1,5 +1,6 @@
 package detection;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class PatternDetector {
 
 				@SuppressWarnings("unchecked")
 				List<Object[]> results = q.getResultList();
-				Collection<ClassifierJoinedClassifier> joinedResult = mapResults(results);
+				Collection<String> joinedResult = mapResults(results);
 
 				Logger.Info("result: " + joinedResult);
 				Paragraph p = new Paragraph(definition, joinedResult);
@@ -67,22 +68,11 @@ public class PatternDetector {
 		}
 	}
 
-	private Collection<ClassifierJoinedClassifier> mapResults(List<Object[]> results) {
-		List<ClassifierJoinedClassifier> result = new LinkedList<>();
+	private Collection<String> mapResults(List<Object[]> results) {
+		List<String> result = new LinkedList<>();
+
 		results.stream().forEach((record) -> {
-			ClassifierJoinedClassifier cjc = new ClassifierJoinedClassifier();
-
-			for (int i = 0; i < record.length; i += 3) {
-				Classifier cl = new Classifier();
-
-				cl.setId((Long) record[i]);
-				cl.setName((String) record[i + 1]);
-				cl.setType(ClassifierType.valueOf((String) record[i + 2]));
-
-				cjc.addChild(cl);
-			}
-
-			result.add(cjc);
+			result.add(Arrays.stream(record).map(Object::toString).reduce((a, b) -> a + "," + b).get());
 		});
 
 		return result;

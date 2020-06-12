@@ -15,33 +15,19 @@
 <?import javafx.scene.control.TextField?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller">
-	<center>
-		<TabPane>
+
+	<left>
+		<TabPane fx:id="tabPane">
 			<Tab text="Classical" closable="false">
-				<BorderPane>
-					<left>
-						<GridPane fx:id="grid">
-						
-						</GridPane>
-					</left>
-					<center>
-						<TreeView fx:id="reportTree"/>
-					</center>
-				</BorderPane>
+				<GridPane fx:id="patternGrid" />
 			</Tab>
 			<Tab text="Metrics" closable="false">
-				<BorderPane>
-					<left>
-						<GridPane fx:id="metricsGrid">
-						
-						</GridPane>
-					</left>
-					<center>
-						<TreeView fx:id="metricsReportTree"/>
-					</center>
-				</BorderPane>
+				<GridPane fx:id="metricsGrid" />
 			</Tab>
 		</TabPane>
+	</left>
+	<center>
+		<TreeView fx:id="reportTree"/>
 	</center>
 	<bottom>
 		<BorderPane>

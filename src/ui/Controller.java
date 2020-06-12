@@ -15,7 +15,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -28,11 +30,11 @@ import pattern.PatternDefinitionExtractor;
 
 public class Controller {
 	@FXML
+	private TabPane tabPane;
+	@FXML
 	private GridPane metricsGrid;
 	@FXML
-	private TreeView<String> metricsReportTree;
-	@FXML
-	private GridPane grid;
+	private GridPane patternGrid;
 	@FXML
 	private TreeView<String> reportTree;
 	@FXML
@@ -40,15 +42,18 @@ public class Controller {
 
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
+	private final List<PatternDefinition> metricsToDetect;
 	private DetectionReport lastReport;
 	private UMLParser parser;
 
 	public Controller() {
 		patternsToDetect = new LinkedList<PatternDefinition>();
+		metricsToDetect = new LinkedList<PatternDefinition>();
 	}
 
 	public void initialize() {
 		this.addPatternsToList();
+		this.addMetricsToList();
 	}
 
 	private void addPatternsToList() {
@@ -62,7 +67,7 @@ public class Controller {
 		for (PatternDefinition pattern : definitions) {
 			CheckBox box = new CheckBox(pattern.getPatternName());
 			box.setSelected(true);
-			grid.addRow(row, box);
+			patternGrid.addRow(row, box);
 
 			patternsToDetect.add(pattern);
 			box.setOnAction(event -> {
@@ -71,6 +76,33 @@ public class Controller {
 					patternsToDetect.add(pattern);
 				} else {
 					patternsToDetect.remove(pattern);
+				}
+			});
+
+			row++;
+		}
+	}
+
+	private void addMetricsToList() {
+		File directory = new File(
+				"/home/ludwig/Repositories/Study/Seminar/code/eclipse-workspace/dpd/definitions/metrics");
+
+		PatternDefinitionExtractor extractor = new PatternDefinitionExtractor(directory);
+		Collection<PatternDefinition> definitions = extractor.extractDefinitions();
+
+		int row = 0;
+		for (PatternDefinition pattern : definitions) {
+			CheckBox box = new CheckBox(pattern.getPatternName());
+			box.setSelected(true);
+			metricsGrid.addRow(row, box);
+
+			metricsToDetect.add(pattern);
+			box.setOnAction(event -> {
+				event.consume();
+				if (box.isSelected()) {
+					metricsToDetect.add(pattern);
+				} else {
+					metricsToDetect.remove(pattern);
 				}
 			});
 
@@ -91,7 +123,7 @@ public class Controller {
 		}
 
 		File oldFile = this.fileChosen;
-		this.fileChosen = fileChooser.showOpenDialog(grid.getScene().getWindow());
+		this.fileChosen = fileChooser.showOpenDialog(tabPane.getScene().getWindow());
 
 		if (this.fileChosen == null) {
 			this.fileChosen = oldFile;
@@ -110,18 +142,30 @@ public class Controller {
 	private void detectPatterns(ActionEvent event) {
 		event.consume();
 
+		Collection<PatternDefinition> defintions;
+		if (isPatternTab()) {
+			defintions = this.patternsToDetect;
+		} else {
+			defintions = this.metricsToDetect;
+		}
+
 		if (this.parser == null) {
-			this.showErrorDialog("You have to parse a file before detecting patterns");
-		} else if (patternsToDetect.size() <= 0) {
-			this.showErrorDialog("Please select at least one pattern");
+			this.showErrorDialog("You have to parse a file before detection");
+		} else if (defintions.size() <= 0) {
+			this.showErrorDialog("Please select at least one detection definition");
 		} else {
 			new Thread(() -> {
-				this.executeDetection();
+				this.executeDetection(defintions);
 				Platform.runLater(() -> {
 					this.readResult();
 				});
 			}).start();
 		}
+	}
+
+	private boolean isPatternTab() {
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		return selectionModel.getSelectedIndex() <= 0;
 	}
 
 	private void readResult() {
@@ -143,9 +187,9 @@ public class Controller {
 
 	}
 
-	private void executeDetection() {
+	private void executeDetection(Collection<PatternDefinition> defintions) {
 		try {
-			PatternDetector detector = new PatternDetector(patternsToDetect);
+			PatternDetector detector = new PatternDetector(defintions);
 			lastReport = detector.detect();
 		} catch (Exception e) {
 			Logger.Error(e);

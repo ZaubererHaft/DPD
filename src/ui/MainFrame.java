@@ -15,7 +15,7 @@ public class MainFrame extends Application {
 		
 		Parent root = FXMLLoader.load(getClass().getResource("mainframe.fxml"));
 		primaryStage.setTitle("Design Pattern Detector");
-		primaryStage.setScene(new Scene(root, 400, 300));
+		primaryStage.setScene(new Scene(root, 600, 400));
 		primaryStage.show();
 		
 		Logger.Info("done");
