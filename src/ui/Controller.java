@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import detection.DetectionReport;
 import detection.PatternDetector;
@@ -12,7 +13,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -24,7 +27,10 @@ import pattern.PatternDefinition;
 import pattern.PatternDefinitionExtractor;
 
 public class Controller {
-
+	@FXML
+	private GridPane metricsGrid;
+	@FXML
+	private TreeView<String> metricsReportTree;
 	@FXML
 	private GridPane grid;
 	@FXML
@@ -35,6 +41,7 @@ public class Controller {
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
 	private DetectionReport lastReport;
+	private UMLParser parser;
 
 	public Controller() {
 		patternsToDetect = new LinkedList<PatternDefinition>();
@@ -103,59 +110,100 @@ public class Controller {
 	private void detectPatterns(ActionEvent event) {
 		event.consume();
 
-		if (fileChosen == null) {
-			this.showErrorDialog("Please select a valid UML file");
+		if (this.parser == null) {
+			this.showErrorDialog("You have to parse a file before detecting patterns");
 		} else if (patternsToDetect.size() <= 0) {
 			this.showErrorDialog("Please select at least one pattern");
 		} else {
-			// this.reportLabel.setText("loading...");
-
 			new Thread(() -> {
 				this.executeDetection();
 				Platform.runLater(() -> {
-
-					TreeItem<String> rootItem = new TreeItem<String>("Report");
-					rootItem.setExpanded(true);
-
-					lastReport.getParagraphs().forEach(p -> {
-						TreeItem<String> subItem = new TreeItem<String>(p.asText());
-						
-						p.getLines().forEach(l -> 
-						{
-							TreeItem<String> subSubItem = new TreeItem<>(l);
-							subItem.getChildren().add(subSubItem);
-						});
-
-						rootItem.getChildren().add(subItem);
-					});
-
-					reportTree.setRoot(rootItem);
+					this.readResult();
 				});
 			}).start();
 		}
 	}
 
+	private void readResult() {
+		TreeItem<String> rootItem = new TreeItem<String>("Report");
+		rootItem.setExpanded(true);
+
+		lastReport.getParagraphs().forEach(p -> {
+			TreeItem<String> subItem = new TreeItem<String>(p.asText());
+
+			p.getLines().forEach(l -> {
+				TreeItem<String> subSubItem = new TreeItem<>(l);
+				subItem.getChildren().add(subSubItem);
+			});
+
+			rootItem.getChildren().add(subItem);
+		});
+
+		reportTree.setRoot(rootItem);
+
+	}
+
 	private void executeDetection() {
 		try {
-			UMLParser parser = new UMLParser(fileChosen.getAbsolutePath());
-			parser.parse();
-
 			PatternDetector detector = new PatternDetector(patternsToDetect);
 			lastReport = detector.detect();
+		} catch (Exception e) {
+			Logger.Error(e);
+			this.showErrorDialog("detect patterns failed " + e);
+		}
+
+	}
+
+	@FXML
+	private void parseFile(ActionEvent event) {
+		event.consume();
+
+		if (this.fileChosen == null) {
+			this.showErrorDialog("Please select a valid UML file");
+		} else {
+
+			if (this.parser != null) {
+				if (!showYesNoDialog("Re-parse will delete all existing data")) {
+					return;
+				}
+				this.parser.cleanUp();
+			} else {
+				this.parser = new UMLParser(fileChosen.getAbsolutePath());
+			}
+
+			new Thread(() -> {
+				this.executeParsing();
+			}).start();
+		}
+
+	}
+
+	private void executeParsing() {
+		try {
+			this.parser.parse();
 
 		} catch (Exception e) {
 			Logger.Error(e);
-			Platform.runLater(() -> {
-				this.showErrorDialog("Parsing data failed " + e);
-				// this.reportLabel.setText("");
-			});
+			this.showErrorDialog("Parsing data failed " + e);
 		}
 	}
 
+	private boolean showYesNoDialog(String content) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirmation");
+		alert.setHeaderText(content);
+		alert.setContentText("Are you ok with this?");
+
+		Optional<ButtonType> result = alert.showAndWait();
+		return result.get() == ButtonType.OK;
+	}
+
 	private void showErrorDialog(String content) {
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Error");
-		alert.setContentText(content);
-		alert.showAndWait();
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setContentText(content);
+			alert.showAndWait();
+		});
 	}
 }

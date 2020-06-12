@@ -3,6 +3,7 @@ package parser;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -55,10 +56,19 @@ public class UMLParser {
 			Logger.Error(e);
 			this.em.getTransaction().rollback();
 			throw e;
-		} finally {
-			Logger.Info("close database connection");
-			this.em.close();
 		}
+	}
+
+	public void cleanUp() {
+		String[] entites = { "association", "methodparameter", "methodreturntype", "methodinvocation", "method",
+				"derivation", "classifier" };
+
+		em.getTransaction().begin();
+		for (String string : entites) {
+			Query query = em.createNativeQuery("DELETE FROM " + string + " CASCADE;");
+			query.executeUpdate();
+		}
+		em.getTransaction().commit();
 	}
 
 }

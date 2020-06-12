@@ -1,0 +1,4 @@
+{
+	"patternName" : "Highest Coupling",
+	"query" : "select m.classifier_id, count(*) from methodinvocation mi join method m on m.id = mi.method_id join classifier c on m.classifier_id = c.id group by m.classifier_id;"
+}

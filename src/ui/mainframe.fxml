@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TreeView?>
@@ -12,20 +14,36 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextField?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller" >
-	<left>
-		<GridPane fx:id="grid">
-		
-		</GridPane>
-	</left>
-	<top>
-		<Label text="DPD Test UI" BorderPane.alignment="CENTER"/>
-	</top>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller">
 	<center>
-		<TreeView fx:id="reportTree"/>
+		<TabPane>
+			<Tab text="Classical" closable="false">
+				<BorderPane>
+					<left>
+						<GridPane fx:id="grid">
+						
+						</GridPane>
+					</left>
+					<center>
+						<TreeView fx:id="reportTree"/>
+					</center>
+				</BorderPane>
+			</Tab>
+			<Tab text="Metrics" closable="false">
+				<BorderPane>
+					<left>
+						<GridPane fx:id="metricsGrid">
+						
+						</GridPane>
+					</left>
+					<center>
+						<TreeView fx:id="metricsReportTree"/>
+					</center>
+				</BorderPane>
+			</Tab>
+		</TabPane>
 	</center>
 	<bottom>
-	
 		<BorderPane>
 			<center>
 				<TextField text="/path/to/uml" editable="false" fx:id="textField"/>	
@@ -35,14 +53,14 @@
 				<left>
 					<Button text="Select" onAction="#selectUMLFile"/>	
 				</left>
+				<center>
+					<Button text="Parse" onAction="#parseFile"/>	
+				</center>
 				<right>		
 					<Button text="Detect" onAction="#detectPatterns"/>	
 				</right>
 			</BorderPane>	
 			</right>
 		</BorderPane>
-
-
 	</bottom>
 </BorderPane>
-
