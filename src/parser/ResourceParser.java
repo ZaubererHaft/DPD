@@ -1,13 +1,10 @@
 package parser;
 
-import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.uml2.uml.Behavior;
-import org.eclipse.uml2.uml.Feature;
 import org.eclipse.uml2.uml.Generalization;
 import org.eclipse.uml2.uml.Interface;
 import org.eclipse.uml2.uml.InterfaceRealization;

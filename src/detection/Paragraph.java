@@ -1,10 +1,6 @@
 package detection;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import entity.Classifier;
 import pattern.PatternDefinition;
 
 public class Paragraph {

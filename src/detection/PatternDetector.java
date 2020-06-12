@@ -10,8 +10,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
-import entity.Classifier;
-import entity.ClassifierType;
 import log.Logger;
 import pattern.PatternDefinition;
 
