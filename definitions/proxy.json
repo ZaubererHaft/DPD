@@ -1,4 +1,6 @@
 {
 	"patternName" : "Proxy",
-	"query" : "SELECT distinct (i.id), i.name, i.type, c2.id, c2.name, c2.type FROM classifier i JOIN derivation d1 ON d1.target_id = i.id JOIN classifier c2 ON d1.source_id = c2.id JOIN method m ON m.classifier_id = d1.source_id JOIN method m2 ON (m2.name = m.name AND m2.classifier_id = i.id) JOIN methodinvocation mi ON (mi.classifier_id = i.id AND mi.method_id = m.id) WHERE i.type = 'INTERFACE';"
+	"query" : "SELECT distinct (i.id), i.name, i.type, c2.id, c2.name, c2.type FROM classifier i JOIN derivation d1 ON d1.target_id = i.id JOIN classifier c2 ON d1.source_id = c2.id JOIN method m ON m.classifier_id = d1.source_id JOIN method m2 ON (m2.name = m.name AND m2.classifier_id = i.id) JOIN methodinvocation mi ON (mi.classifier_id = i.id AND mi.method_id = m.id) WHERE i.type = 'INTERFACE';",
+	"builder" : "pattern.ProxyBuilder"
+
 }

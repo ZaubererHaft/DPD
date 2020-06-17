@@ -18,7 +18,7 @@
 
 	<left>
 		<TabPane fx:id="tabPane">
-			<Tab text="Classical" closable="false">
+			<Tab text="Pattern" closable="false">
 				<GridPane fx:id="patternGrid" />
 			</Tab>
 			<Tab text="Metrics" closable="false">
@@ -27,7 +27,24 @@
 		</TabPane>
 	</left>
 	<center>
-		<TreeView fx:id="reportTree"/>
+		<BorderPane>
+			<top>
+				<FlowPane>			
+					<Label text="Group by" />
+					<ComboBox value="Patterns" fx:id="groupBox">
+				      <items>
+				        <FXCollections fx:factory="observableArrayList">
+				          <String fx:value="Patterns" />
+				          <String fx:value="Classes" />
+				        </FXCollections>
+				      </items>
+					</ComboBox>							
+				</FlowPane>				
+			</top>
+			<center>
+				<TreeView fx:id="reportTree"/>
+			</center>
+		</BorderPane>
 	</center>
 	<bottom>
 		<BorderPane>

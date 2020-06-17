@@ -1,16 +1,23 @@
 package pattern;
 
+import java.lang.reflect.Constructor;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonIgnoreProperties()
 public class PatternDefinition {
 
 	private String patternName;
 	private String query;
+	private String builder;
 
 	public String getPatternName() {
 		return patternName;
 	}
 
-	public void setPatternName(String patterName) {
-		patternName = patterName;
+	public void setPatternName(String patternName) {
+		this.patternName = patternName;
 	}
 
 	public String getQuery() {
@@ -21,30 +28,27 @@ public class PatternDefinition {
 		this.query = query;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((patternName == null) ? 0 : patternName.hashCode());
-		return result;
+	public String getBuilder() {
+		return builder;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PatternDefinition other = (PatternDefinition) obj;
-		if (patternName == null) {
-			if (other.patternName != null)
-				return false;
-		} else if (!patternName.equals(other.patternName))
-			return false;
-		return true;
+	public void setBuilder(String builder) {
+		this.builder = builder;
 	}
-	
+
+	public PatternBuilder createBuilder() {
+
+		if (builder == null) {
+			return new DefaultPatternBuilder();
+		}
+
+		try {
+			Constructor<?> constructor = Class.forName(builder).getConstructor();
+			return (PatternBuilder) constructor.newInstance();
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+
+	}
 
 }

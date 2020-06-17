@@ -15,6 +15,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -39,7 +40,9 @@ public class Controller {
 	private TreeView<String> reportTree;
 	@FXML
 	private TextField textField;
-
+	@FXML
+	private ComboBox<String> groupBox;
+	
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
 	private final List<PatternDefinition> metricsToDetect;
@@ -133,9 +136,7 @@ public class Controller {
 			this.textField.setText("path/to/uml");
 		} else {
 			this.textField.setText(this.fileChosen.getAbsolutePath());
-
 		}
-
 	}
 
 	@FXML
@@ -148,10 +149,9 @@ public class Controller {
 		} else {
 			defintions = this.metricsToDetect;
 		}
+		
 
-		if (this.parser == null) {
-			this.showErrorDialog("You have to parse a file before detection");
-		} else if (defintions.size() <= 0) {
+		if (defintions.size() <= 0) {
 			this.showErrorDialog("Please select at least one detection definition");
 		} else {
 			new Thread(() -> {
@@ -161,6 +161,11 @@ public class Controller {
 				});
 			}).start();
 		}
+	}
+
+	private boolean isClassesTab() {
+		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+		return selectionModel.getSelectedIndex() == 1;
 	}
 
 	private boolean isPatternTab() {
@@ -211,9 +216,9 @@ public class Controller {
 					return;
 				}
 				this.parser.cleanUp();
-			} else {
-				this.parser = new UMLParser(fileChosen.getAbsolutePath());
 			}
+
+			this.parser = new UMLParser(fileChosen.getAbsolutePath());
 
 			new Thread(() -> {
 				this.executeParsing();

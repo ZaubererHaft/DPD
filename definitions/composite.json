@@ -1,4 +1,4 @@
 {
 	"patternName" : "Composite",
-	"query" : "SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN classifier c2 ON c2.type IN ('DEFAULT') JOIN derivation d1 ON d1.target_id = c1.id AND d1.source_id = c2.id JOIN association a ON a.source_id = c2.id AND a.target_id = c1.id AND a.uppermultiplicity = '*' JOIN derivation d2 ON d2.target_id = c1.id AND d2.id <> d1.id AND NOT EXISTS (SELECT * FROM derivation d3 WHERE d2.source_id = d3.target_id) WHERE c1.type IN ('ABSTRACT');"
+	"query" : "SELECT * FROM classifier c1 JOIN classifier c2 ON c2.type IN ('DEFAULT') JOIN derivation d1 ON d1.target_id = c1.id AND d1.source_id = c2.id JOIN association a ON a.source_id = c2.id AND a.target_id = c1.id AND a.uppermultiplicity = '*' JOIN derivation d2 ON d2.target_id = c1.id AND d2.id <> d1.id AND NOT EXISTS (SELECT * FROM derivation d3 WHERE d2.source_id = d3.target_id) WHERE c1.type IN ('ABSTRACT');"
 }

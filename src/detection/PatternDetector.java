@@ -11,6 +11,8 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import log.Logger;
+import pattern.Pattern;
+import pattern.PatternBuilder;
 import pattern.PatternDefinition;
 
 public class PatternDetector {
@@ -47,7 +49,7 @@ public class PatternDetector {
 
 				@SuppressWarnings("unchecked")
 				List<Object[]> results = q.getResultList();
-				Collection<String> joinedResult = mapResults(results);
+				Collection<Pattern> joinedResult = mapResults(results, definition);
 
 				Logger.Info("result: " + joinedResult);
 				Paragraph p = new Paragraph(definition, joinedResult);
@@ -66,11 +68,15 @@ public class PatternDetector {
 		}
 	}
 
-	private Collection<String> mapResults(List<Object[]> results) {
-		List<String> result = new LinkedList<>();
+	private Collection<Pattern> mapResults(List<Object[]> results, PatternDefinition def) {
+		List<Pattern> result = new LinkedList<>();
 
 		results.stream().forEach((record) -> {
-			result.add(Arrays.stream(record).map(Object::toString).reduce((a, b) -> a + "," + b).get());
+			
+			PatternBuilder pb = def.createBuilder();
+			Pattern p = pb.build(def, record);
+			
+			result.add(p);
 		});
 
 		return result;

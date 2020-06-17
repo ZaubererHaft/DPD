@@ -1,14 +1,18 @@
 package detection;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+import pattern.Pattern;
 import pattern.PatternDefinition;
 
 public class Paragraph {
 
 	private final PatternDefinition definition;
-	private final Collection<String> result;
+	private final Collection<Pattern> result;
 
-	public Paragraph(PatternDefinition definition, Collection<String> queryResults) {
+	public Paragraph(PatternDefinition definition, Collection<Pattern> queryResults) {
 		this.result = queryResults;
 		this.definition = definition;
 	}
@@ -26,7 +30,13 @@ public class Paragraph {
 	}
 
 	public Collection<String> getLines() {
-		return result;
+		List<String> lines = new LinkedList();
+		
+		for (Pattern pattern : result) {
+			lines.add(pattern.asText());
+		}
+		
+		return lines;
 	}
 
 }
