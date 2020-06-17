@@ -1,6 +1,11 @@
-package pattern;
+package pattern.builder;
 
-public class DefaultPatternBuilder implements PatternBuilder {
+import pattern.Pattern;
+import pattern.PatternBuilder;
+import pattern.PatternDefinition;
+import pattern.Role;
+
+public class FallbackPatternBuilder implements PatternBuilder {
 
 	@Override
 	public Pattern build(PatternDefinition definition, Object[] data) {

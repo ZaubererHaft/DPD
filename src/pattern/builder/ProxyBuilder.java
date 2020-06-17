@@ -1,6 +1,10 @@
-package pattern;
+package pattern.builder;
 
 import entity.Classifier;
+import pattern.Pattern;
+import pattern.PatternBuilder;
+import pattern.PatternDefinition;
+import pattern.Role;
 
 public class ProxyBuilder implements PatternBuilder {
 

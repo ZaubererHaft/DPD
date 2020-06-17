@@ -1,4 +1,5 @@
 {
 	"patternName" : "Singleton",
-	"query" : "SELECT c.* FROM classifier c JOIN method m2 ON m2.classifier_id = c.id AND m2.isstatic = 't' AND m2.visibility = 'PUBLIC' JOIN methodinvocation mi ON mi.method_id = m2.id AND mi.classifier_id = c.id JOIN methodreturntype mrt ON mrt.method_id = m2.id AND mrt.classifier_id = c.id WHERE NOT EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c.id AND m1.name = c.name AND m1.visibility = 'PUBLIC');"
+	"query" : "SELECT c.* FROM classifier c JOIN method m2 ON m2.classifier_id = c.id AND m2.isstatic = 't' AND m2.visibility = 'PUBLIC' JOIN methodinvocation mi ON mi.method_id = m2.id AND mi.classifier_id = c.id JOIN methodreturntype mrt ON mrt.method_id = m2.id AND mrt.classifier_id = c.id WHERE NOT EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c.id AND m1.name = c.name AND m1.visibility = 'PUBLIC');",
+	"builder" : "pattern.builder.SingletonBuilder"
 }

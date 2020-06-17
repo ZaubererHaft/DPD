@@ -1,5 +1,5 @@
 {
 	"patternName" : "Abstract Factory",
 	"query" : "SELECT distinct (c1.id), c1.name, c1.type FROM classifier c1 JOIN derivation d1 ON d1.target_id = c1.id JOIN method m1 ON m1.classifier_id = c1.id JOIN method m2 ON m2.classifier_id = d1.source_id AND m1.name = m2.name JOIN methodreturntype mrt ON mrt.method_id = m2.id  JOIN classifier c2 ON c2.id = mrt.classifier_id JOIN derivation d3 ON d3.source_id = c2.id WHERE c1.type IN ('ABSTRACT','INTERFACE');",
-	"builder" : "pattern.DefaultPatternBuilder"
+	"builder" : "pattern.builder.AbstractFactoryBuilder"
 }

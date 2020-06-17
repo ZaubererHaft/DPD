@@ -1,4 +1,5 @@
 {
 	"patternName" : "Command",
-	"query" : "SELECT distinct (c1.id), c1.name, c1.type, c2.*, c3.*  FROM classifier c1 JOIN classifier c2 ON c2.type IN ('INTERFACE') JOIN method m1 ON m1.classifier_id = c1.id JOIN methodinvocation mi1 ON mi1.method_id = m1.id AND mi1.classifier_id = c2.id JOIN derivation d1 ON d1.target_id = c2.id JOIN method m2 ON m2.classifier_id = d1.source_id JOIN methodinvocation mi2 ON mi2.method_id = m2.id JOIN classifier c3 ON c3.type IN ('ABSTRACT','DEFAULT') AND mi2.classifier_id = c3.id WHERE c1.type IN ('ABSTRACT','DEFAULT');"
+	"query" : "SELECT distinct (c1.id), c1.name, c1.type, c2.*, c3.*  FROM classifier c1 JOIN classifier c2 ON c2.type IN ('INTERFACE') JOIN method m1 ON m1.classifier_id = c1.id JOIN methodinvocation mi1 ON mi1.method_id = m1.id AND mi1.classifier_id = c2.id JOIN derivation d1 ON d1.target_id = c2.id JOIN method m2 ON m2.classifier_id = d1.source_id JOIN methodinvocation mi2 ON mi2.method_id = m2.id JOIN classifier c3 ON c3.type IN ('ABSTRACT','DEFAULT') AND mi2.classifier_id = c3.id WHERE c1.type IN ('ABSTRACT','DEFAULT');",
+	"builder" : "pattern.builder.CommandBuilder"
 }

@@ -5,6 +5,8 @@ import java.lang.reflect.Constructor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import pattern.builder.FallbackPatternBuilder;
+
 @JsonIgnoreProperties()
 public class PatternDefinition {
 
@@ -39,7 +41,7 @@ public class PatternDefinition {
 	public PatternBuilder createBuilder() {
 
 		if (builder == null) {
-			return new DefaultPatternBuilder();
+			return new FallbackPatternBuilder();
 		}
 
 		try {

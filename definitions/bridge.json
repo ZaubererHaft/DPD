@@ -1,4 +1,5 @@
 {
 	"patternName" : "Bridge",
-	"query" : "SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN derivation d1 ON d1.target_id = c1.id JOIN method m ON m.classifier_id = c1.id JOIN classifier c2 ON c2.type IN ('ABSTRACT') JOIN methodinvocation mi ON mi.method_id=m.id AND mi.classifier_id = c2.id JOIN derivation d2 ON d2.target_id = c2.id WHERE c1.type IN ('ABSTRACT');"	
+	"query" : "SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN derivation d1 ON d1.target_id = c1.id JOIN method m ON m.classifier_id = c1.id JOIN classifier c2 ON c2.type IN ('ABSTRACT') JOIN methodinvocation mi ON mi.method_id=m.id AND mi.classifier_id = c2.id JOIN derivation d2 ON d2.target_id = c2.id WHERE c1.type IN ('ABSTRACT');",
+	"builder" : "pattern.builder.BridgeBuilder"	
 }
