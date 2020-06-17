@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import detection.DetectionResult;
 import detection.PatternDetector;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -49,21 +50,24 @@ public class Controller {
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
 	private final List<PatternDefinition> metricsToDetect;
-	private DetectionReport lastReport;
+
 	private UMLParser parser;
-	
+
 	private ReportBuilder reportBuilder;
+	private Collection<DetectionResult> lastDetectionResult;
 
 	public Controller() {
-		patternsToDetect = new LinkedList<PatternDefinition>();
-		metricsToDetect = new LinkedList<PatternDefinition>();
+		this.patternsToDetect = new LinkedList<PatternDefinition>();
+		this.metricsToDetect = new LinkedList<PatternDefinition>();
+		this.lastDetectionResult = new LinkedList<DetectionResult>();
 	}
 
 	public void initialize() {
 		this.addPatternsToList();
 		this.addMetricsToList();
-		
-		this.reportBuilder = new ClassesReportBuilder();
+
+		this.reportBuilder = this.fromComboBox();
+
 	}
 
 	private void addPatternsToList() {
@@ -118,6 +122,14 @@ public class Controller {
 
 			row++;
 		}
+	}
+
+	private ReportBuilder fromComboBox() {
+		if (this.groupBox.getValue().equalsIgnoreCase("classes")) {
+			return new ClassesReportBuilder();
+		}
+
+		return new PatternsReportBuilder();
 	}
 
 	@FXML
@@ -176,43 +188,30 @@ public class Controller {
 
 	private void readResult() {
 
-		TreeItem<String> rootItem = new TreeItem<String>(this.lastReport.getHeadline());
+		DetectionReport report = this.reportBuilder.build(this.lastDetectionResult);
+
+		TreeItem<String> rootItem = new TreeItem<String>(report.getHeadline());
 		rootItem.setExpanded(true);
 
-		if (this.groupBox.getValue().equals("Patterns")) {
-			lastReport.getParagraphs().forEach(p -> {
-				TreeItem<String> subItem = new TreeItem<String>(p.getHeader());
+		report.getParagraphs().forEach(p -> {
+			TreeItem<String> subItem = new TreeItem<String>(p.getHeader());
 
-				p.getLines().forEach(l -> {
-					TreeItem<String> subSubItem = new TreeItem<>(l.asText());
-					subItem.getChildren().add(subSubItem);
-				});
-
-				rootItem.getChildren().add(subItem);
+			p.getLines().forEach(l -> {
+				TreeItem<String> subSubItem = new TreeItem<>(l.asText());
+				subItem.getChildren().add(subSubItem);
 			});
-		}
-		else
-		{
-			lastReport.getParagraphs().forEach(p -> {
-				TreeItem<String> subItem = new TreeItem<String>(p.getHeader());
 
-				p.getLines().forEach(l -> {
-					TreeItem<String> subSubItem = new TreeItem<>(l.asText());
-					subItem.getChildren().add(subSubItem);
-				});
+			rootItem.getChildren().add(subItem);
+		});
 
-				rootItem.getChildren().add(subItem);
-			});
-		}
-
-		reportTree.setRoot(rootItem);
+		this.reportTree.setRoot(rootItem);
 
 	}
 
 	private void executeDetection(Collection<PatternDefinition> defintions) {
 		try {
 			PatternDetector detector = new PatternDetector(defintions);
-			lastReport = this.reportBuilder.build(detector.detect());
+			this.lastDetectionResult = detector.detect();
 		} catch (Exception e) {
 			Logger.Error(e);
 			this.showErrorDialog("detect patterns failed " + e);
@@ -246,9 +245,9 @@ public class Controller {
 
 	@FXML
 	private void comboAction(ActionEvent event) {
-
 		event.consume();
-
+		this.reportBuilder = this.fromComboBox();
+		this.readResult();
 	}
 
 	private void executeParsing() {

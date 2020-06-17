@@ -3,7 +3,6 @@ package pattern;
 import java.lang.reflect.Constructor;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import pattern.builder.FallbackPatternBuilder;
 
