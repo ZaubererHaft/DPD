@@ -27,8 +27,8 @@ public class Pattern {
 	public Collection<Role> getRoles() {
 		return roles;
 	}
-
-	public String asText() {
+	
+	public String asPatternText() {
 		
 		return roles.stream().map(r -> r.getName() + ":" + r.getClassifier().getName()).reduce((a,b) -> a + ", " + b).get();
 	}

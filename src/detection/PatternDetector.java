@@ -1,6 +1,5 @@
 package detection;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +40,7 @@ public class PatternDetector {
 		try {
 			Logger.Info("run queries...");
 
-			DetectionReport report = new DetectionReport();
+			PatternReport report = new PatternReport();
 
 			definitions.forEach(definition -> {
 				Logger.Info("run query " + definition.getQuery());
@@ -52,7 +51,7 @@ public class PatternDetector {
 				Collection<Pattern> joinedResult = mapResults(results, definition);
 
 				Logger.Info("result: " + joinedResult);
-				Paragraph p = new Paragraph(definition, joinedResult);
+				PatternParagraph p = new PatternParagraph(definition, joinedResult);
 				report.addParagraph(p);
 			});
 

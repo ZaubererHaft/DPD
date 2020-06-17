@@ -1,28 +1,11 @@
 package detection;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
-public class DetectionReport {
+public interface DetectionReport {
 
-	private List<Paragraph> paragraphs;
-
-	public DetectionReport() {
-		this.paragraphs = new LinkedList<>();
-	}
-
-	public void addParagraph(Paragraph paragraph) {
-		this.paragraphs.add(paragraph);
-	}
-
-	public Collection<Paragraph> getParagraphs()
-	{
-		return new LinkedList<Paragraph>(paragraphs);
-	}
+	String getHeadline();
 	
-	public String asText() {
-		return paragraphs.stream().map(p -> p.asText()).reduce("", (a, b) -> a + "\n" + b);
-	}
+	Collection<Paragraph> getParagraphs();
 
 }

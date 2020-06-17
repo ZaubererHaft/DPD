@@ -31,7 +31,7 @@
 			<top>
 				<FlowPane>			
 					<Label text="Group by" />
-					<ComboBox value="Patterns" fx:id="groupBox">
+					<ComboBox value="Patterns" fx:id="groupBox" onAction="#comboAction">
 				      <items>
 				        <FXCollections fx:factory="observableArrayList">
 				          <String fx:value="Patterns" />

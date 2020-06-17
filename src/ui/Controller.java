@@ -42,7 +42,7 @@ public class Controller {
 	private TextField textField;
 	@FXML
 	private ComboBox<String> groupBox;
-	
+
 	private File fileChosen;
 	private final List<PatternDefinition> patternsToDetect;
 	private final List<PatternDefinition> metricsToDetect;
@@ -149,7 +149,6 @@ public class Controller {
 		} else {
 			defintions = this.metricsToDetect;
 		}
-		
 
 		if (defintions.size() <= 0) {
 			this.showErrorDialog("Please select at least one detection definition");
@@ -163,30 +162,41 @@ public class Controller {
 		}
 	}
 
-	private boolean isClassesTab() {
-		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-		return selectionModel.getSelectedIndex() == 1;
-	}
-
 	private boolean isPatternTab() {
 		SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
 		return selectionModel.getSelectedIndex() <= 0;
 	}
 
 	private void readResult() {
-		TreeItem<String> rootItem = new TreeItem<String>("Report");
+
+		TreeItem<String> rootItem = new TreeItem<String>(this.lastReport.getHeadline());
 		rootItem.setExpanded(true);
 
-		lastReport.getParagraphs().forEach(p -> {
-			TreeItem<String> subItem = new TreeItem<String>(p.asText());
+		if (this.groupBox.getValue().equals("Patterns")) {
+			lastReport.getParagraphs().forEach(p -> {
+				TreeItem<String> subItem = new TreeItem<String>(p.getHeader());
 
-			p.getLines().forEach(l -> {
-				TreeItem<String> subSubItem = new TreeItem<>(l);
-				subItem.getChildren().add(subSubItem);
+				p.getLines().forEach(l -> {
+					TreeItem<String> subSubItem = new TreeItem<>(l.asText());
+					subItem.getChildren().add(subSubItem);
+				});
+
+				rootItem.getChildren().add(subItem);
 			});
+		}
+		else
+		{
+			lastReport.getParagraphs().forEach(p -> {
+				TreeItem<String> subItem = new TreeItem<String>(p.getHeader());
 
-			rootItem.getChildren().add(subItem);
-		});
+				p.getLines().forEach(l -> {
+					TreeItem<String> subSubItem = new TreeItem<>(l.asText());
+					subItem.getChildren().add(subSubItem);
+				});
+
+				rootItem.getChildren().add(subItem);
+			});
+		}
 
 		reportTree.setRoot(rootItem);
 
@@ -224,6 +234,13 @@ public class Controller {
 				this.executeParsing();
 			}).start();
 		}
+
+	}
+
+	@FXML
+	private void comboAction(ActionEvent event) {
+
+		event.consume();
 
 	}
 
