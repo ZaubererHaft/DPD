@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import detection.DetectionReport;
 import detection.PatternDetector;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -28,6 +27,10 @@ import log.Logger;
 import parser.UMLParser;
 import pattern.PatternDefinition;
 import pattern.PatternDefinitionExtractor;
+import report.DetectionReport;
+import report.builder.ClassesReportBuilder;
+import report.builder.PatternsReportBuilder;
+import report.builder.ReportBuilder;
 
 public class Controller {
 	@FXML
@@ -48,6 +51,8 @@ public class Controller {
 	private final List<PatternDefinition> metricsToDetect;
 	private DetectionReport lastReport;
 	private UMLParser parser;
+	
+	private ReportBuilder reportBuilder;
 
 	public Controller() {
 		patternsToDetect = new LinkedList<PatternDefinition>();
@@ -57,6 +62,8 @@ public class Controller {
 	public void initialize() {
 		this.addPatternsToList();
 		this.addMetricsToList();
+		
+		this.reportBuilder = new ClassesReportBuilder();
 	}
 
 	private void addPatternsToList() {
@@ -205,7 +212,7 @@ public class Controller {
 	private void executeDetection(Collection<PatternDefinition> defintions) {
 		try {
 			PatternDetector detector = new PatternDetector(defintions);
-			lastReport = detector.detect();
+			lastReport = this.reportBuilder.build(detector.detect());
 		} catch (Exception e) {
 			Logger.Error(e);
 			this.showErrorDialog("detect patterns failed " + e);

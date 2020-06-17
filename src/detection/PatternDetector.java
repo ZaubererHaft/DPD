@@ -25,7 +25,7 @@ public class PatternDetector {
 		this.definitions = definitions;
 	}
 
-	public DetectionReport detect() {
+	public Collection<DetectionResult> detect() {
 		this.connectToDatabase();
 		return this.runQueries();
 	}
@@ -36,13 +36,15 @@ public class PatternDetector {
 		this.em = factory.createEntityManager();
 	}
 
-	private DetectionReport runQueries() {
+	private Collection<DetectionResult> runQueries() {
 		try {
 			Logger.Info("run queries...");
 
-			PatternReport report = new PatternReport();
+			Collection<DetectionResult> result = new LinkedList<DetectionResult>();
 
 			definitions.forEach(definition -> {
+				DetectionResult dr = new DetectionResult(definition);
+
 				Logger.Info("run query " + definition.getQuery());
 				Query q = em.createNativeQuery(definition.getQuery());
 
@@ -50,13 +52,14 @@ public class PatternDetector {
 				List<Object[]> results = q.getResultList();
 				Collection<Pattern> joinedResult = mapResults(results, definition);
 
+				dr.addPatterns(joinedResult);
 				Logger.Info("result: " + joinedResult);
-				PatternParagraph p = new PatternParagraph(definition, joinedResult);
-				report.addParagraph(p);
+				result.add(dr);
+
 			});
 
 			Logger.Info("done");
-			return report;
+			return result;
 
 		} catch (Exception e) {
 			Logger.Error(e);
@@ -71,10 +74,10 @@ public class PatternDetector {
 		List<Pattern> result = new LinkedList<>();
 
 		results.stream().forEach((record) -> {
-			
+
 			PatternBuilder pb = def.createBuilder();
 			Pattern p = pb.build(def, record);
-			
+
 			result.add(p);
 		});
 

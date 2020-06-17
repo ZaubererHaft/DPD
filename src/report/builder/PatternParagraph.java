@@ -1,4 +1,4 @@
-package detection;
+package report.builder;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -6,6 +6,8 @@ import java.util.List;
 
 import pattern.Pattern;
 import pattern.PatternDefinition;
+import report.Line;
+import report.Paragraph;
 
 class PatternParagraph implements Paragraph{
 

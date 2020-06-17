@@ -1,4 +1,4 @@
-package detection;
+package report;
 
 public interface Line {
 

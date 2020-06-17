@@ -1,8 +1,9 @@
-package detection;
+package report.builder;
 
 import pattern.Pattern;
+import report.Line;
 
-public class PatternLine implements Line{
+class PatternLine implements Line{
 
 	private Pattern pattern;
 

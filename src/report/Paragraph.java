@@ -1,4 +1,4 @@
-package detection;
+package report;
 
 import java.util.Collection;
 
