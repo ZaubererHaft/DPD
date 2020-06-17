@@ -1,26 +1,19 @@
 package pattern.builder;
 
-import entity.Classifier;
 import pattern.Pattern;
 import pattern.PatternBuilder;
 import pattern.PatternDefinition;
 import pattern.Role;
 
-public class FallbackPatternBuilder implements PatternBuilder {
+public class MetricsBuilder implements PatternBuilder {
 
 	@Override
 	public Pattern build(PatternDefinition definition, Object[] data) {
 
 		Pattern pattern = new Pattern(definition);
-		
-		String s = "";
-		for (Object object : data) {
-			s += data.toString() + " ";
-		}
-		
-		Classifier  c= new Classifier();
-		
-		pattern.addRole(new Role(c, s));
+
+		Long count = (Long) data[3];
+		pattern.addRole(new Role(create(data, 0), count + " method invocations"));
 
 		return pattern;
 	}

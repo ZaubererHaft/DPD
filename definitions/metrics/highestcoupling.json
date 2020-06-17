@@ -1,4 +1,5 @@
 {
 	"patternName" : "Highest Coupling",
-	"query" : "SELECT c.name, concat ('method invocations: ', count(mi.id)) FROM classifier c LEFT JOIN method m on m.classifier_id = c.id LEFT JOIN methodinvocation mi ON mi.method_id = m.id group by c.id ORDER BY count(mi.id) DESC LIMIT (SELECT count(*)*0.1 FROM classifier);"
+	"query" : "SELECT c.id, c.name, c.type, count(mi.id) FROM classifier c LEFT JOIN method m on m.classifier_id = c.id LEFT JOIN methodinvocation mi ON mi.method_id = m.id group by c.id ORDER BY count(mi.id) DESC LIMIT (SELECT count(*)*0.1 FROM classifier);",
+	"builder" : "pattern.builder.MetricsBuilder"
 }

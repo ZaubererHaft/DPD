@@ -174,3 +174,10 @@ SELECT distinct (c1.id), c1.name, c1.type FROM classifier c1 JOIN derivation d1 
                             JOIN classifier c2 ON c2.id = mrt.classifier_id
                             JOIN derivation d3 ON d3.source_id = c2.id
 WHERE c1.type IN ('ABSTRACT','INTERFACE');
+
+
+
+SELECT c.id, c.name, c.type, count(mi.id) 
+FROM classifier c LEFT JOIN method m on m.classifier_id = c.id LEFT JOIN methodinvocation mi ON mi.method_id = m.id 
+group by c.id 
+ORDER BY count(mi.id) ASC LIMIT (SELECT count(*)*0.1 FROM classifier);
