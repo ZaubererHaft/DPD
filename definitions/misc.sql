@@ -26,10 +26,12 @@ SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND EXISTS 
                                                                      AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.classifier_id = c2.id AND mi.method_id = m.id)));
 
 -- strategy as join
-SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type
+SELECT *
 FROM classifier c1 JOIN method m ON m.classifier_id = c1.id
                    JOIN methodinvocation mi ON mi.method_id = m.id 
                    JOIN classifier c2 ON mi.classifier_id = c2.id 
+                   JOIN derivation d1 ON d1.target_id = c2.id
+		   JOIN derivation d2 ON d2.target_id = c2.id AND d2.id <> d1.id
 WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND c2.type = 'INTERFACE';
 
 -- adapter
@@ -53,12 +55,13 @@ SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT') AND EXISTS (SELECT * F
                                                                      AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.method_id=m.id AND mi.classifier_id = c2.id
                                                                      AND EXISTS (SELECT * FROM derivation d2 WHERE d2.target_id = c2.id)))));
 -- bridge as join
-SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN derivation d1 ON d1.target_id = c1.id
+SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 
+                            JOIN derivation d1 ON d1.target_id = c1.id
                             JOIN method m ON m.classifier_id = c1.id
-                            JOIN classifier c2 ON c2.type IN ('ABSTRACT')
+                            JOIN classifier c2 ON c2.type IN ('ABSTRACT', 'INTERFACE')
                             JOIN methodinvocation mi ON mi.method_id=m.id AND mi.classifier_id = c2.id
                             JOIN derivation d2 ON d2.target_id = c2.id
-WHERE c1.type IN ('ABSTRACT');
+WHERE c1.type IN ('ABSTRACT', 'INTERFACE');
 
 --decorator
 SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT') AND EXISTS (SELECT * FROM classifier c2 WHERE c2.type IN ('ABSTRACT') 
@@ -127,7 +130,7 @@ SELECT * FROM classifier c1 WHERE c1.type IN ('ABSTRACT','DEFAULT') AND EXISTS (
                                                                     AND EXISTS (SELECT * FROM methodparameter mp1 WHERE mp1.method_id = m2.id AND mp1.classifier_id = c2.id)))))));
 
 --observer as join
-SELECT distinct (c1.id), c1.name, c1.type, c2.* FROM classifier c1 JOIN classifier c2 ON c2.type IN ('ABSTRACT','DEFAULT') 
+SELECT * FROM classifier c1 JOIN classifier c2 ON c2.type IN ('ABSTRACT','DEFAULT') 
                             JOIN association a ON a.source_id = c1.id AND a.target_id = c2.id AND a.uppermultiplicity = '*'
                             JOIN derivation d1 ON d1.target_id = c2.id
                             JOIN method m1 ON m1.classifier_id = c1.id
@@ -146,7 +149,7 @@ WHERE c1.type IN ('ABSTRACT','DEFAULT');
 
 
 --singleton
-SELECT * FROM classifier c WHERE NOT EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c.id AND m1.name = c.name AND m1.visibility = 'PUBLIC')
+SELECT * FROM classifier c WHERE NOT EXISTS (SELECT * FROM method m1 WHERE m1.classifier_id = c.id AND m1.name = c.name AND m1.visibility = 'PRIVATE')
                                  AND EXISTS (SELECT * FROM method m2 WHERE m2.classifier_id = c.id AND m2.isstatic = 't' AND m2.visibility = 'PUBLIC'
                                  AND EXISTS (SELECT * FROM methodinvocation mi WHERE mi.method_id = m2.id AND mi.classifier_id = c.id
                                  AND EXISTS (SELECT * FROM methodreturntype mrt WHERE mrt.method_id = m2.id AND mrt.classifier_id = c.id)));

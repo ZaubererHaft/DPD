@@ -1,5 +1,5 @@
 {
 	"patternName" : "Strategy",
-	"query" : "SELECT distinct (c1.id), c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN method m ON m.classifier_id = c1.id JOIN methodinvocation mi ON mi.method_id = m.id JOIN classifier c2 ON mi.classifier_id = c2.id WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND c2.type = 'INTERFACE';",
+	"query" : "SELECT distinct c1.id, c1.name, c1.type, c2.id, c2.name, c2.type FROM classifier c1 JOIN method m ON m.classifier_id = c1.id JOIN methodinvocation mi ON mi.method_id = m.id JOIN classifier c2 ON mi.classifier_id = c2.id JOIN derivation d1 ON d1.target_id = c2.id JOIN derivation d2 ON d2.target_id = c2.id AND d2.id <> d1.id WHERE c1.type IN ('ABSTRACT', 'DEFAULT') AND c2.type = 'INTERFACE';",
 	"builder" : "pattern.builder.StrategyBuilder"
 }

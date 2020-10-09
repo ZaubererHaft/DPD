@@ -10,8 +10,8 @@ public class StrategyBuilder implements PatternBuilder {
 	public Pattern build(PatternDefinition definition, Object[] data) {
 		Pattern pattern = new Pattern(definition);
 
-		pattern.addRole(new Role(create(data, 0), "Class"));
-		pattern.addRole(new Role(create(data, 3), "Strategy"));
+		pattern.addRole(new Role(create(data, 0), "Client"));
+		pattern.addRole(new Role(create(data, 3), "Abstract Strategy"));
 
 		return pattern;
 	}

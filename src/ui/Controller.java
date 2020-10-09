@@ -252,7 +252,11 @@ public class Controller {
 
 	private void executeParsing() {
 		try {
+			long start = System.currentTimeMillis();
 			this.parser.parse();
+			long end = System.currentTimeMillis();
+			
+			Logger.Warn("parsing took: " + (end - start) + " ms");
 
 		} catch (Exception e) {
 			Logger.Error(e);
